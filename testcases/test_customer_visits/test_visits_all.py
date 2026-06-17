@@ -227,8 +227,7 @@ class TestVisitsAll:
         1.轮询task状态等completed
         """
         # GET /api/v1/minutes/parsed/{taskId}
-        max_attempts = 60
-        for i in range(max_attempts):
+        for i in range(60):
             get_tasks = requests.get(
                 url=f"{BASE_URL}/api/v1/minutes/parsed/{self.tasks_id[1]}",
                 headers=self.headers,
