@@ -5,7 +5,7 @@ import urllib3
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 from config.get_token import TOKEN
-from utils.api_client import BASE_URL
+from config.api_client import BASE_URL
 
 
 class TestApiClient:

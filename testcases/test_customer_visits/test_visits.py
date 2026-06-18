@@ -5,59 +5,11 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from utils.api_client import BASE_URL
+from config.api_client import BASE_URL
 from config.get_token import TOKEN
 import urllib3
 
 urllib3.disable_warnings()
-
-"""
-新增走访
-POST/api/v1/visits
-enterpriseId	    string	    ✅	企业 ID
-visitors        	string[]	✅	我方参会人姓名
-participants	    object[]	❌	结构化参会人 { name, userId?, openId? }
-department	        string	    ❌	所属部门
-keyPoints	        string[]	❌	走访要点
-enterpriseDemands	string[]	❌	企业需求
-followUpItems	    string[]	❌	跟进事项
-source	            string	    ❌	来源，默认 手动录入
-minutesId	        string	    ❌	飞书妙记 ID
-
-上传走访材料
-POST /api/v1/visits/{visitId}/attachments
-visitId (path)	 string	✅	走访 ID
-type	         string	✅	file / link / text
-name	         string	❌	显示名
-url 	         string	❌	type=file/link 时填
-content	         string	❌	type=text 时填正文
-fileSize	     int64	❌	type=file 时填
-mimeType	     string	❌	type=file 时填
-
-触发 AI 分析
-POST /api/v1/visits/{visitId}/analyze
-visitId (path)	string	✅	走访 ID
-
-轮询 pending profile updates
-GET /api/v1/visits/{visitId}/profile-updates
-visitId (path)	string	✅	走访 ID
-
-提交走访（应用画像更新）
-POST /api/v1/visits/{visitId}/submit
-visitId (path)	    string	    ✅	走访 ID
-applyProfileKeys	string[]	❌	要应用的字段 key；空数组/不传 = 应用全部 pending
-
-走访列表
-GET/api/v1/visits
-走访详情
-GET/api/v1/visits/{visitId}
-编辑走访
-PUT/api/v1/visits/{visitId}
-删除走访
-DELETE/api/v1/visits/{visitId}
-隐藏走访
-POST/api/v1/visits/{visitId}/hide
-"""
 
 class TestVisits:
     visit_id = []

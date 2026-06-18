@@ -7,7 +7,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from utils.api_client import BASE_URL
+from config.api_client import BASE_URL
 from config.get_token import TOKEN
 from utils.get_visits_problem_data import get_csv_visits_problem_data
 

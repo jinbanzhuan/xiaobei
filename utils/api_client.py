@@ -1,1 +1,0 @@
-BASE_URL = "https://dev-bo-api.xiaobei.top"
