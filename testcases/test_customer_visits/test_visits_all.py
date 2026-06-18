@@ -147,15 +147,13 @@ class TestVisitsAll:
                 url=f"{BASE_URL}/api/v1/visits/{self.visits_id[0]}/attachments",
                 json={
                     "type": "url",
-                    "url": "https://fcn6bo5q7kmm.feishu.cn/docx/HNNTdbNocojItcxLzf8cwZ7Enfh",
+                    "url": "https://fcn6bo5q7kmm.feishu.cn/minutes/obcnwganei6q1558sd4m59o1",
                     "name": "飞书妙记"
                 },
                 headers=self.headers,
                 verify=False
             )
-            # 断言状态码和响应结果
             assert add_attachments.status_code == 200
-            # assert add_attachments.json()['data']['type'] == "url"
 
             # ==================== [07/13]贴妙记/文档/智能纪要,拉内容写进visit ====================
             add_parse = requests.post(
@@ -163,12 +161,32 @@ class TestVisitsAll:
                 json={
                     "enterpriseId": self.enterprise_id[0],
                     "visitId": self.visits_id[0],
-                    "rawContent": "https://fcn6bo5q7kmm.feishu.cn/docx/HNNTdbNocojItcxLzf8cwZ7Enfh"
+                    "rawContent": "https://fcn6bo5q7kmm.feishu.cn/minutes/obcnwganei6q1558sd4m59o1"
                 },
                 headers=self.headers,
                 verify=False
             )
+            self.tasks_id.append(add_parse.json()['data']['taskId'])
             assert add_parse.status_code == 200
+
+            # ===================== [07.1/13]轮询妙记解析任务结果 ====================
+            for j in range(90):  # 90 * 2s = 约 3 分钟
+                get_parse_result = requests.get(
+                    url=f"{BASE_URL}/api/v1/minutes/parse-result/{self.tasks_id[0]}",
+                    headers=self.headers,
+                    verify=False
+                )
+                parse_result = get_parse_result.json()["status"]
+
+                if parse_result == "completed":
+                    break
+                elif parse_result == "failed":
+                    pytest.fail(f"妙记解析失败")
+                elif parse_result == "canceled":
+                    pytest.fail(f"妙记解析任务被取消")
+                time.sleep(2)
+            else:
+                pytest.fail("妙记解析任务 3 分钟未完成")
 
             # ===================== [08/13]触发ai分析 ====================
             add_analyze = requests.post(
@@ -177,22 +195,23 @@ class TestVisitsAll:
                 headers=self.headers,
                 verify=False
             )
+            assert add_analyze.status_code == 200
             self.tasks_id.append(add_analyze.json()['data']['taskId'])
 
            # ===================== [09/13]轮询status==completed ====================
             for i in range(60):
                 get_tasks = requests.get(
-                    url=f"{BASE_URL}/api/v1/minutes/parsed/{self.tasks_id[0]}",
+                    url=f"{BASE_URL}/api/v1/minutes/parsed/{self.tasks_id[1]}",
                     headers=self.headers,
                     verify=False
                 )
                 ai_summary = get_tasks.json()["data"]["visitRecord"]["aiSummary"]
                 if ai_summary == "" and get_tasks.status_code == 200:
-                    time.sleep(20)
+                    time.sleep(10)
                 elif ai_summary != "" and get_tasks.status_code == 200:
                     break
             else:
-                pytest.fail("AI 分析任务 20 分钟未完成")
+                pytest.fail("AI 分析任务 10 分钟未完成")
 
            # ===================== [10/13]AI提取的画像更新 ====================
             add_profile_updates = requests.get(
@@ -238,10 +257,10 @@ class TestVisitsAll:
             print(f"\n❌断言错误❌")
             traceback.print_exc()
         except IndexError:
-            print(f"❌索引错误❌")
+            print(f"\n❌索引错误❌")
             traceback.print_exc()
         except Exception:
-            print(f"❌未知错误❌:{Exception}")
+            print(f"\n❌未知错误❌:{Exception}")
             traceback.print_exc()
         else:
             print(
@@ -251,10 +270,11 @@ class TestVisitsAll:
             print(f"[04/12]✅准备阶段-走访中:{visitings.json()['data']['status']}")
             print(f"[05/13]✅结束阶段-记录走访要点:{confirmed.json()['data']['status']}")
             print(f"[06/13]✅上传走访材料成功:{add_attachments.json()['data']['url']}")
-            print(f"[07/13]✅写入走访内容到visits成功:{add_parse.json()['data']['minutesName']}")
-            print(f"[08/13]✅触发AI分析成功:{add_analyze.json()['data']['taskId']}")
-            print(f"[09/13]✅轮询第 {i + 1} 次获取任务结果成功:{get_tasks.json()['data']['visitRecord']}")
-            print(f"[10/13]✅AI提取的画像更新成功:{add_profile_updates.json()['data']['items'][0]['newValue']}")
+            print(f"[07/13]✅写入走访内容到visits成功:{add_parse.json()['data']}")
+            print(f"[07.1/13]✅轮询第 {j + 1} 次妙记解析完成:{get_parse_result.json()['status']}")
+            print(f"[08/13]✅触发AI分析成功:{add_analyze.json()['data']}")
+            print(f"[09/13]✅轮询第 {i + 1} 次获取任务结果成功:{get_tasks.json()['data']['visitRecord']['aiSummary']}")
+            print(f"[10/13]✅AI提取的画像更新成功:{add_profile_updates.json()['data']['items']}") # [0]['newValue']
             print(f"[11/13]✅提交走访成功:{add_submit.json()}")
             print(f"[12/13]✅跟进阶段-需求处理与任务分配:{commit_visits.json()['data']['status']}")
             print(f"[13/13]✅冒烟测试成功👍,辛苦啦💦:{del_response.json()}")
@@ -265,5 +285,5 @@ class TestVisitsAll:
 
 
 
-if __name__ == "__main__":
-    pytest.main([__file__, "-v", "-s"])
+    if __name__ == "__main__":
+        pytest.main([__file__, "-v", "-s"])
