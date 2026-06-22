@@ -7,8 +7,8 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from config.api_client import BASE_URL
-from config.get_token import TOKEN
+from config.api_client import base_url
+from config.get_token import token
 from utils.get_visits_problem_data import get_csv_visits_problem_data
 
 """
@@ -30,7 +30,7 @@ class TestQiYeHuaXiang():
     update_visits_problem_comment_content = []
     headers = {
         "Content-Type": "application/json",
-        "Authorization": f"Bearer {TOKEN}",
+        "Authorization": f"Bearer {token}",
     }
 
     @pytest.mark.新增走访
@@ -40,7 +40,7 @@ class TestQiYeHuaXiang():
         1. 新增企业走访成功
         """
         # POST/api/v1/visits新增企业走访
-        url = f"{BASE_URL}/api/v1/visits"
+        url = f"{base_url}/api/v1/visits"
         body = {
             "enterpriseId": "7e367d34-ab10-41a6-b682-fc696bc76c63",
             "visitors": [],
@@ -78,7 +78,7 @@ class TestQiYeHuaXiang():
         12.新增 41个字符
         13.新增 为空
         """
-        visits_problem_url = f"{BASE_URL}/api/v1/enterprises/7e367d34-ab10-41a6-b682-fc696bc76c63/pending-questions"
+        visits_problem_url = f"{base_url}/api/v1/enterprises/7e367d34-ab10-41a6-b682-fc696bc76c63/pending-questions"
         body = {
             "content": contents,
             "sourceDepartment": sourceDepartments,
@@ -132,7 +132,7 @@ class TestQiYeHuaXiang():
             update_visit = self.del_visit_id[i]
             update_contents, update_sourceDepartments, update_sourcePersons = update_data_list[i]
 
-            update_visits_problem_url = f"{BASE_URL}/api/v1/pending-questions/{update_visit}"
+            update_visits_problem_url = f"{base_url}/api/v1/pending-questions/{update_visit}"
             body = {
                 "content": update_contents,
                 "sourceDepartment": update_sourceDepartments,
@@ -154,7 +154,7 @@ class TestQiYeHuaXiang():
 
         for i in range(len(self.update_visits_problem_comment_content)):
             update_content = self.update_visits_problem_comment_content[i]
-            update_url = f"{BASE_URL}/api/v1/pending-questions/{self.del_visit_id[i]}"
+            update_url = f"{base_url}/api/v1/pending-questions/{self.del_visit_id[i]}"
             payload = {
                 "content": update_content,
                 "answer": "接口测试答案",
@@ -187,7 +187,7 @@ class TestQiYeHuaXiang():
         """
         count_list = []
         for del_visit_id in self.del_visit_id:
-            del_url = f"{BASE_URL}/api/v1/pending-questions/{del_visit_id}"
+            del_url = f"{base_url}/api/v1/pending-questions/{del_visit_id}"
             del_response = requests.delete(url=del_url, headers=self.headers, verify=False)
 
             count_list.append(del_response.json()["code"])
@@ -205,7 +205,7 @@ class TestQiYeHuaXiang():
         """
         # DELETE / api / v1 / visits / {visitId}
         for visit_id in self.visit_id:
-            del_url = f"{BASE_URL}/api/v1/visits/{visit_id}"
+            del_url = f"{base_url}/api/v1/visits/{visit_id}"
             del_response = requests.delete(url=del_url, headers=self.headers, verify=False)
             if del_response.json()["code"] == 0:
                 assert del_response.status_code == 200

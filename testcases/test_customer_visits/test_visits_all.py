@@ -78,7 +78,7 @@ class TestVisitsAll:
                        'status'] == "checklist", f"\n[03]🙅状态非checklist,实际状态:{checklists.json()['data']['status']}"
             assert checklists.json()['data']['enterpriseId'] == enterprise_id[
                 0], f"\n[03]🙅企业id不一致,返回值enterpriseId:{checklists.json()['data']['enterpriseId']},列表enterpriseId:{enterprise_id[0]}"
-            print(f"[03]准备阶段-沟通清单:{checklists.json()['data']}")
+            print(f"[03]✅准备阶段-沟通清单:{checklists.json()['data']}")
 
             # ==================== [04]扭转状态visiting ====================
             visitings = requests.put(
@@ -254,7 +254,7 @@ class TestVisitsAll:
                        'status'] == "submitted", f"\n[13]🙅状态错误,返回值:{commit_visits.json()['data']['status']}"
             print(f"[13]✅跟进阶段-需求处理与任务分配:{commit_visits.json()['data']}")
 
-            # ==================== [14]删除走访 ====================
+            # # ==================== [14]删除走访 ====================
             del_response = requests.delete(
                 url=f"{base_url}/api/v1/visits/{visits_id[0]}",
                 headers=self.headers,
@@ -275,21 +275,27 @@ class TestVisitsAll:
             traceback.print_exc()
 
     @pytest.mark.准备阶段_删除走访
-    def test_add_visits_case(self):
+    def test_del_ready_stage(self):
+        """
+        1, 准备阶段-删除走访
+        """
         enterprise_id = []
         visits_id = []
         try:
             # ==================== [01]获取随机企业id 存入enterprise_id ====================
+            """
+            1,case
+            """
             get_enterprises = requests.get(
                 url=f"{base_url}/api/v1/enterprises?pageSize=100&page=1",
                 headers=self.headers,
                 verify=False
             )
 
-            assert get_enterprises.status_code == 200, f"\n[01]☣️获取随机企业id失败,️响应码错误:{get_enterprises.status_code}"
+            assert get_enterprises.status_code == 200, f"\n[01]🙅获取随机企业id失败,️响应码错误:{get_enterprises.status_code}"
             enterprise_id.append(get_enterprises.json()['data']['list'][self.r]['id'])
             assert enterprise_id is not None and len(
-                enterprise_id) > 0, f"\n[01]☣️add随机企业id失败,列表为空:{enterprise_id}"
+                enterprise_id) > 0, f"\n[01]🙅add随机企业id失败,列表为空:{enterprise_id}"
             print(f"\n[01]✅获取随机企业id:{get_enterprises.json()['data']['list'][self.r]['id']}")
 
             # ==================== [02]新增走访 ====================
@@ -304,9 +310,9 @@ class TestVisitsAll:
                 headers=self.headers,
                 verify=False
             )
-            assert add_visits.status_code == 200, f"\n[02]☣️新增走访失败,️响应码错误:{add_visits.status_code}"
+            assert add_visits.status_code == 200, f"\n[02]🙅新增走访失败,️响应码错误:{add_visits.status_code}"
             assert add_visits.json()['data']['enterpriseId'] == enterprise_id[
-                0], f"\n[02]☣️新增走访失败,企业id不一致,返回值enterpriseId:{add_visits.json()['data']['enterpriseId']},列表enterpriseId{enterprise_id[0]}"
+                0], f"\n[02]🙅新增走访失败,企业id不一致,返回值enterpriseId:{add_visits.json()['data']['enterpriseId']},列表enterpriseId{enterprise_id[0]}"
             visits_id.append(add_visits.json()['data']['id'])
             print(f"[02]✅新增走访:{add_visits.json()['data']['createdAt']}")
 
@@ -316,9 +322,8 @@ class TestVisitsAll:
                 headers=self.headers,
                 verify=False
             )
-            assert del_visits.status_code == 200, f"\n[03]☣️删除走访失败,️响应码错误:{del_visits.status_code}"
-            assert del_visits.json()['code'] == 0, f"\n[03]☣️删除走访失败:{del_visits.json()}"
-            print(f"[04]✅删除走访成功:{del_visits.json()}\n")
+            assert del_visits.status_code == 200, f"\n[03]🙅删除走访失败,️响应码错误:{del_visits.status_code}"
+            assert del_visits.json()['code'] == 0, f"\n[03]🙅删除走访失败:{del_visits.json()}"
 
         except AssertionError:
             print(f"\n❌ 断言错误 ❌")
@@ -332,9 +337,14 @@ class TestVisitsAll:
         except Exception as e:
             print(f"❌ 未知错误 ❌:{e}")
             traceback.print_exc()
+        else:
+            print(f"[04]✅准备阶段-删除走访成功:{del_visits.json()}\n")
 
     @pytest.mark.走访阶段_删除走访
-    def test_del_ready_visits_case(self):
+    def test_del_visits_stage(self):
+        """
+        1, 走访阶段-删除走访
+        """
         enterprise_id = []
         visits_id = []
         try:
@@ -345,10 +355,10 @@ class TestVisitsAll:
                 verify=False
             )
 
-            assert get_enterprises.status_code == 200, f"\n[01]☣️获取随机企业id失败,️响应码错误:{get_enterprises.status_code}"
+            assert get_enterprises.status_code == 200, f"\n[01]🙅获取随机企业id失败,️响应码错误:{get_enterprises.status_code}"
             enterprise_id.append(get_enterprises.json()['data']['list'][self.r]['id'])
             assert enterprise_id is not None and len(
-                enterprise_id) > 0, f"\n[01]☣️add随机企业id失败,列表为空:{enterprise_id}"
+                enterprise_id) > 0, f"\n[01]🙅add随机企业id失败,列表为空:{enterprise_id}"
             print(f"\n[01]✅获取随机企业id:{get_enterprises.json()['data']['list'][self.r]['id']}")
 
             # ==================== [02]新增走访 ====================
@@ -363,9 +373,9 @@ class TestVisitsAll:
                 headers=self.headers,
                 verify=False
             )
-            assert add_visits.status_code == 200, f"\n[02]☣️新增走访失败,响应码错误:{add_visits.status_code}"
+            assert add_visits.status_code == 200, f"\n[02]🙅新增走访失败,响应码错误:{add_visits.status_code}"
             assert add_visits.json()['data']['enterpriseId'] == enterprise_id[
-                0], f"\n[02]☣️新增走访失败,企业id不一致,返回值enterpriseId:{add_visits.json()['data']['enterpriseId']},列表enterpriseId{enterprise_id}"
+                0], f"\n[02]🙅新增走访失败,企业id不一致,返回值enterpriseId:{add_visits.json()['data']['enterpriseId']},列表enterpriseId{enterprise_id}"
             visits_id.append(add_visits.json()['data']['id'])
             print(f"[02]✅新增走访:{add_visits.json()['data']['createdAt']}")
 
@@ -378,11 +388,11 @@ class TestVisitsAll:
                 headers=self.headers,
                 verify=False
             )
-            assert checklists.status_code == 200, f"\n[03]☣️扭转状态checklist失败,响应码错误:{checklists.status_code}"
+            assert checklists.status_code == 200, f"\n[03]🙅扭转状态checklist失败,响应码错误:{checklists.status_code}"
             assert checklists.json()['data'][
-                       'status'] == "checklist", f"\n[03]☣️扭转状态checklist失败:{checklists.json()}"
+                       'status'] == "checklist", f"\n[03]🙅扭转状态checklist失败:{checklists.json()}"
             assert checklists.json()['data']['enterpriseId'] == enterprise_id[
-                0], f"\n[02]☣️企业id不一致,返回值enterpriseId:{checklists.json()['data']['enterpriseId']},列表enterpriseId{enterprise_id}"
+                0], f"\n[02]🙅企业id不一致,返回值enterpriseId:{checklists.json()['data']['enterpriseId']},列表enterpriseId{enterprise_id}"
             print(f"[03]✅扭转状态为:{checklists.json()['data']['status']}")
 
             # ==================== [04]扭转状态visitings ====================
@@ -394,10 +404,10 @@ class TestVisitsAll:
                 headers=self.headers,
                 verify=False
             )
-            assert visitings.status_code == 200, f"\n[03]☣️扭转状态visitings失败,响应码错误:{visitings.status_code}"
-            assert visitings.json()['data']['status'] == "visiting", f"\n[03]☣️扭转状态checklist失败:{visitings.json()}"
+            assert visitings.status_code == 200, f"\n[03]🙅扭转状态visitings失败,响应码错误:{visitings.status_code}"
+            assert visitings.json()['data']['status'] == "visiting", f"\n[03]🙅扭转状态checklist失败:{visitings.json()}"
             assert visitings.json()['data']['enterpriseId'] == enterprise_id[
-                0], f"\n[02]☣️企业id不一致,返回值enterpriseId:{visitings.json()['data']['enterpriseId']},列表enterpriseId{enterprise_id}"
+                0], f"\n[02]🙅企业id不一致,返回值enterpriseId:{visitings.json()['data']['enterpriseId']},列表enterpriseId{enterprise_id}"
             print(f"[04]✅扭转状态为:{visitings.json()['data']['status']},跳转到 走访阶段")
 
             # ==================== [05]删除走访 ====================
@@ -406,9 +416,8 @@ class TestVisitsAll:
                 headers=self.headers,
                 verify=False
             )
-            assert del_visits.status_code == 200, f"\n[03]☣️删除走访失败,响应码错误:{del_visits.status_code}"
-            assert del_visits.json()['code'] == 0, f"\n[03]☣️删除走访失败:{del_visits.json()}"
-            print(f"[04]✅删除走访成功:{del_visits.json()}\n")
+            assert del_visits.status_code == 200, f"\n[03]🙅删除走访失败,响应码错误:{del_visits.status_code}"
+            assert del_visits.json()['code'] == 0, f"\n[03]🙅删除走访失败:{del_visits.json()}"
 
         except AssertionError:
             print(f"\n❌ 断言错误 ❌")
@@ -416,12 +425,20 @@ class TestVisitsAll:
         except IndexError:
             print(f"❌ 索引错误 ❌")
             traceback.print_exc()
+        except DataError:
+            print(f"❌ 数据错误 ❌")
+            traceback.print_exc()
         except Exception as e:
             print(f"❌ 未知错误 ❌:{e}")
             traceback.print_exc()
+        else:
+            print(f"[04]✅走访阶段-删除走访成功:{del_visits.json()}\n")
 
     @pytest.mark.删除隐藏走访
-    def test_del_hidden_visits_case(self):
+    def test_del_hidden_visits(self):
+        """
+        1, 删除隐藏走访
+        """
         enterprise_id = []
         visits_id = []
         try:
@@ -431,10 +448,10 @@ class TestVisitsAll:
                 headers=self.headers,
                 verify=False
             )
+            assert get_enterprises.status_code == 200, f"\n[01]🙅获取随机企业失败,响应码错误:{get_enterprises.status_code}"
             enterprise_id.append(get_enterprises.json()['data']['list'][self.r]['id'])
-            assert get_enterprises.status_code == 200, f"\n[01]☣️获取随机企业失败,响应码错误:{get_enterprises.status_code}"
             assert enterprise_id is not None and len(
-                enterprise_id) > 0, f"\n[01]☣️add随机企业id失败,列表为空:{enterprise_id}"
+                enterprise_id) > 0, f"\n[01]🙅add随机企业id失败,列表为空:{enterprise_id}"
             print(f"\n[01]✅获取随机企业id:{get_enterprises.json()['data']['list'][self.r]['id']}")
 
             # ==================== [02]新增走访 ====================
@@ -449,9 +466,9 @@ class TestVisitsAll:
                 headers=self.headers,
                 verify=False
             )
-            assert add_visits.status_code == 200, f"\n[02]☣️新增走访失败,响应码错误:{add_visits.status_code}"
+            assert add_visits.status_code == 200, f"\n[02]🙅新增走访失败,响应码错误:{add_visits.status_code}"
             assert add_visits.json()['data']['enterpriseId'] == enterprise_id[
-                0], f"\n[02]☣️企业id不一致,返回值enterpriseId:{add_visits.json()['data']['enterpriseId']},列表enterpriseId{enterprise_id[0]}"
+                0], f"\n[02]🙅企业id不一致,返回值enterpriseId:{add_visits.json()['data']['enterpriseId']},列表enterpriseId{enterprise_id[0]}"
             visits_id.append(add_visits.json()['data']['id'])
             print(f"[02]✅新增走访:{add_visits.json()['data']['createdAt']}")
 
@@ -462,8 +479,8 @@ class TestVisitsAll:
                 headers=self.headers,
                 verify=False
             )
-            assert hide.status_code == 200, f"\n[03]☣️隐藏走访失败,响应码错误:{hide.status_code}"
-            assert hide.json()['data']['hidden'] == True, f"\n[03]☣️返回值不是True,实际返回值:{hide.json()}"
+            assert hide.status_code == 200, f"\n[03]🙅隐藏走访失败,响应码错误:{hide.status_code}"
+            assert hide.json()['data']['hidden'] == True, f"\n[03]🙅返回值不是True,实际返回值:{hide.json()}"
             print(f"[03]✅隐藏走访成功:{hide.json()['data']['hidden']}")
 
             # ==================== [04]删除走访 ====================
@@ -472,9 +489,8 @@ class TestVisitsAll:
                 headers=self.headers,
                 verify=False
             )
-            assert del_visits.status_code == 200, f"\n[03]☣️删除走访失败,响应码错误:{del_visits.status_code}"
-            assert del_visits.json()['code'] == 0, f"\n[03]☣️删除走访失败:{del_visits.json()}"
-            print(f"[04]✅删除走访成功:{del_visits.json()}\n")
+            assert del_visits.status_code == 200, f"\n[03]🙅删除走访失败,响应码错误:{del_visits.status_code}"
+            assert del_visits.json()['code'] == 0, f"\n[03]🙅删除走访失败:{del_visits.json()}"
 
         except AssertionError:
             print(f"\n❌ 断言错误 ❌")
@@ -482,13 +498,205 @@ class TestVisitsAll:
         except IndexError:
             print(f"\n❌ 索引错误 ❌")
             traceback.print_exc()
+        except DataError:
+            print(f"❌ 数据错误 ❌")
+            traceback.print_exc()
         except Exception as e:
             print(f"\n❌ 未知错误 ❌:{e}")
             traceback.print_exc()
+        else:
+            print(f"[04]✅删除隐藏走访:{del_visits.json()}\n")
 
-    @pytest.mark.提交走访
-    def test_submit_visits_case(self):
-        print()
+    @pytest.mark.新增单个和多个走访
+    def test_add_visits(self):
+        """
+        1, 新增单个走访
+        2, 新增多个(number)走访
+        """
+        number = 10
+        enterprise_id = []
+        visits_id = []
+        try:
+            # ==================== [01]获取随机企业id 存入enterprise_id ====================
+            for i in range(number):
+                random_number = random.randint(0, 99)
+                get_enterprises = requests.get(
+                    url=f"{base_url}/api/v1/enterprises?pageSize=100&page=1",
+                    headers=self.headers,
+                    verify=False
+                )
+                assert get_enterprises.status_code == 200, f"\n[01]🙅获取随机企业失败,响应码错误:{get_enterprises.status_code}"
+                enterprise_id.append(get_enterprises.json()['data']['list'][random_number]['id'])
+                assert enterprise_id is not None and len(
+                    enterprise_id) > 0, f"\n[01]🙅add随机企业id失败,列表为空:{enterprise_id}"
+            print(f"\n[01]✅获取 {number} 次 随机企业id成功:{enterprise_id}")
+
+            # ==================== [02]新增走访 1 次 ====================
+            add_visits = requests.post(
+                url=f"{base_url}/api/v1/visits",
+                json={
+                    "enterpriseId": enterprise_id[0],
+                    "visitors": ["金阳"],
+                    "participants": [{"name": "金阳"}],
+                    "source": "手动录入"
+                },
+                headers=self.headers,
+                verify=False
+            )
+            assert add_visits.status_code == 200, f"\n[02]🙅新增走访失败,响应码错误:{add_visits.status_code}"
+            assert add_visits.json()['data']['enterpriseId'] == enterprise_id[
+                0], f"\n[02]🙅企业id不一致,返回值enterpriseId:{add_visits.json()['data']['enterpriseId']},列表enterpriseId{enterprise_id[0]}"
+            visits_id.append(add_visits.json()['data']['id'])
+            print(f"[02]✅新增单个走访成功:{add_visits.json()['data']}")
+
+            # ==================== [03]新增走访 N 次 ====================
+            for i in range(len(enterprise_id)):
+                add_visits = requests.post(
+                    url=f"{base_url}/api/v1/visits",
+                    json={
+                        "enterpriseId": enterprise_id[i],
+                        "visitors": ["金阳"],
+                        "participants": [{"name": "金阳"}],
+                        "source": "手动录入"
+                    },
+                    headers=self.headers,
+                    verify=False
+                )
+                assert add_visits.status_code == 200, f"\n[02]🙅新增走访失败,响应码错误:{add_visits.status_code}"
+                assert add_visits.json()['data']['enterpriseId'] == enterprise_id[
+                    i], f"\n[02]🙅企业id不一致,返回值enterpriseId:{add_visits.json()['data']['enterpriseId']},列表enterpriseId{enterprise_id[0]}"
+                visits_id.append(add_visits.json()['data']['id'])
+                # print(f"[03]✅新增多个走访成功: {i + 1} 次 {add_visits.json()['data']}")
+            print(f"[03]✅新增多个走访成功, 新增了{number}次, 最后一次走访返回值:{add_visits.json()['data']}")
+
+            # ==================== [04]删除走访 ====================
+            for visits in visits_id:
+                del_visits = requests.delete(
+                    url=f"{base_url}/api/v1/visits/{visits}",
+                    headers=self.headers,
+                    verify=False
+                )
+                assert del_visits.status_code == 200, f"\n[03]🙅删除走访失败,响应码错误:{del_visits.status_code}"
+                assert del_visits.json()['code'] == 0, f"\n[03]🙅删除走访失败:{del_visits.json()}"
+
+
+        except AssertionError:
+            print(f"\n❌ 断言错误 ❌")
+            traceback.print_exc()
+        except IndexError:
+            print(f"\n❌ 索引错误 ❌")
+            traceback.print_exc()
+        except DataError:
+            print(f"❌ 数据错误 ❌")
+            traceback.print_exc()
+        except Exception as e:
+            print(f"\n❌ 未知错误 ❌:{e}")
+            traceback.print_exc()
+        else:
+            print(f"[04]✅新增单个/多个走访成功 👍点赞👍👍\n")
+
+    @pytest.mark.新增背调事项
+    def test_add_background_check_items(self):
+        """
+        1, 新增单条背调事项
+        2, 新增多条背调事项 -还未补充
+        """
+        item_id = []
+        checklist_id = []
+        enterprise_id = []
+        visits_id = []
+        try:
+            # ==================== [01]获取随机企业id 存入enterprise_id ====================
+            random_number = random.randint(0, 99)
+            get_enterprises = requests.get(
+                url=f"{base_url}/api/v1/enterprises?pageSize=100&page=1",
+                headers=self.headers,
+                verify=False
+            )
+            assert get_enterprises.status_code == 200, f"\n[01]🙅获取随机企业失败,响应码错误:{get_enterprises.status_code}"
+            enterprise_id.append(get_enterprises.json()['data']['list'][random_number]['id'])
+            assert enterprise_id is not None and len(
+                enterprise_id) > 0, f"\n[01]🙅add随机企业id失败,列表为空:{enterprise_id}"
+            print(f"\n[01]✅获取随机企业id成功:{enterprise_id}")
+
+            # ==================== [02]新增走访 ====================
+            add_visits = requests.post(
+                url=f"{base_url}/api/v1/visits",
+                json={
+                    "enterpriseId": enterprise_id[0],
+                    "visitors": ["金阳"],
+                    "participants": [{"name": "金阳"}],
+                    "source": "手动录入"
+                },
+                headers=self.headers,
+                verify=False
+            )
+            assert add_visits.status_code == 200, f"\n[02]🙅新增走访失败,响应码错误:{add_visits.status_code}"
+            assert add_visits.json()['data']['enterpriseId'] == enterprise_id[
+                0], f"\n[02]🙅企业id不一致,返回值enterpriseId:{add_visits.json()['data']['enterpriseId']},列表enterpriseId{enterprise_id[0]}"
+            visits_id.append(add_visits.json()['data']['id'])
+            print(f"[02]✅新增走访:{add_visits.json()['data']}")
+
+            # ==================== [03]查询checklistID ====================
+            # POST /api/v1/visits/{visitId}/checklist/generate  接口二选一拿checklistID
+            # GET /api/v1/visits/{visits_id[0]}/checklist
+            get_checklist = requests.post(
+                url=f"{base_url}/api/v1/visits/{visits_id[0]}/checklist/generate",
+                headers=self.headers,
+                verify=False
+            )
+            assert get_checklist.status_code == 200, f"\n[02]🙅新增走访失败,响应码错误:{add_visits.status_code}"
+            # checklist_id.append(get_checklist.json()['data']['id'])
+            checklist_id.append(get_checklist.json()['data']['taskId'])
+            print(f"[03]✅查询checklistID成功:{get_checklist.json()['data']}")
+
+            # ==================== [04]新增背调事项 ====================
+            add_background_check_items = requests.post(
+                url=f"{base_url}/api/v1/checklists/{checklist_id[0]}/items",
+                json={
+                    "question": "这是一条新增的背调事项case",
+                },
+                headers=self.headers,
+                verify=False
+            )
+            assert add_background_check_items.status_code == 200, f"\n[03]🙅新增背调事项失败,响应码错误:{add_background_check_items.status_code}"
+            item_id.append(add_background_check_items.json()['data']['id'])
+            # assert add_background_check_items.json()['data']['enterpriseId'] == enterprise_id[0]
+            print(f"[04]✅新增背调事项成功:{add_background_check_items.json()}")
+
+            # ==================== [05]删除新增的背调事项 ====================
+            # https://dev-bo-api.xiaobei.top/api/v1/checklist-items/01KVQJVCVWA1BDTVP8KCS88EC8
+            del_background_check_items = requests.delete(
+                url=f"{base_url}/api/v1/checklist-items/{item_id[0]}",
+                headers=self.headers,
+                verify=False
+            )
+            assert add_background_check_items.status_code == 200, f"\n[05]🙅查询新增的背调事项失败,响应码错误:{add_background_check_items.status_code}"
+            print(f"[05]✅删除新增的背调事项成功:{add_background_check_items.json()}")
+
+            # ==================== [05]删除走访 ====================
+            del_visits = requests.delete(
+                url=f"{base_url}/api/v1/visits/{visits_id[0]}",
+                headers=self.headers,
+                verify=False
+            )
+            assert del_visits.status_code == 200, f"\n[03]🙅删除走访失败,响应码错误:{del_visits.status_code}"
+            assert del_visits.json()['code'] == 0, f"\n[03]🙅删除走访失败:{del_visits.json()}"
+
+        except AssertionError:
+            print(f"\n❌ 断言错误 ❌")
+            traceback.print_exc()
+        except IndexError:
+            print(f"\n❌ 索引错误 ❌")
+            traceback.print_exc()
+        except DataError:
+            print(f"❌ 数据错误 ❌")
+            traceback.print_exc()
+        except Exception as e:
+            print(f"\n❌ 未知错误 ❌:{e}")
+            traceback.print_exc()
+        else:
+            print(f"[06]✅新增背调事项成功 🐮奶牛牛\n")
 
     if __name__ == "__main__":
         pytest.main([__file__, "-v", "-s"])
