@@ -1,2 +1,2 @@
-BASE_URL = "https://dev-bo-api.xiaobei.top"
-# BASE_URL = "http://localhost:12888/"
+base_url= "https://dev-bo-api.xiaobei.top"
+# base_url = "http://localhost:12888/"

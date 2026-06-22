@@ -5,8 +5,8 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from config.api_client import BASE_URL
-from config.get_token import TOKEN
+from config.api_client import base_url
+from config.get_token import token
 import urllib3
 
 urllib3.disable_warnings()
@@ -16,7 +16,7 @@ class TestVisits:
     enterprise_id=[]
     headers = {
         "Content-Type": "application/json",
-        "Authorization": f"Bearer {TOKEN}",
+        "Authorization": f"Bearer {token}",
     }
 
     @pytest.mark.新增走访
@@ -30,7 +30,7 @@ class TestVisits:
         1. 新增企业走访成功
         """
         # POST/api/v1/visits新增企业走访
-        url = f"{BASE_URL}/api/v1/visits"
+        url = f"{base_url}/api/v1/visits"
         body = {
             "enterpriseId": enterprise_id,
             "visitors": [],
@@ -56,7 +56,7 @@ class TestVisits:
         """
         # POST/api/v1/visits/{visitId}/hide   显示企业走访卡片
         for visit_id in self.visit_id:
-            hide_url = f"{BASE_URL}/api/v1/visits/{visit_id}/hide"
+            hide_url = f"{base_url}/api/v1/visits/{visit_id}/hide"
             body = {"hidden": True}
             hide_response = requests.post(url=hide_url, json=body, headers=self.headers, verify=False)
             assert hide_response.status_code == 200
@@ -69,7 +69,7 @@ class TestVisits:
         1.隐藏的走访卡片显示成功
         """
         # POST/api/v1/visits/{visitId}/hide   隐藏企业走访卡片
-        hide_url = f"{BASE_URL}/api/v1/visits/{self.visit_id[1]}/hide"
+        hide_url = f"{base_url}/api/v1/visits/{self.visit_id[1]}/hide"
         body = {"hidden": False}
         hide_responses = requests.post(url=hide_url, json=body, headers=self.headers, verify=False)
         assert hide_responses.status_code == 200
@@ -83,7 +83,7 @@ class TestVisits:
         """
         # POST/api/v1/visits/{visitId}/submit
         for i in range(len(self.enterprise_id)):
-            submit_url = f"{BASE_URL}/api/v1/visits/{self.visit_id[1]}/submit"
+            submit_url = f"{base_url}/api/v1/visits/{self.visit_id[1]}/submit"
             body = {
                 "enterpriseId": self.enterprise_id[i],
                 "meetingTime": "2026-06-10T15:00:00Z",
@@ -101,7 +101,7 @@ class TestVisits:
         """
         # DELETE/api/v1/visits/{visitId}
         for visit_id in self.visit_id:
-            del_url = f"{BASE_URL}/api/v1/visits/{visit_id}"
+            del_url = f"{base_url}/api/v1/visits/{visit_id}"
             del_response = requests.delete(url=del_url, headers=self.headers, verify=False)
             if del_response.json()["code"] == 0:
                 assert del_response.status_code == 200
