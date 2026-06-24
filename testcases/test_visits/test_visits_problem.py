@@ -9,22 +9,11 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from config.api_client import base_url
 from config.get_token import token
-from utils.get_visits_problem_data import get_csv_visits_problem_data
-
-"""
-待走访问题
-/api/v1/enterprises/{visitId}
-编辑走访
-PUT/api/v1/visits/{visitId}
-#
-del
-#
-put
-"""
+from utils.get_visits_data import get_csv_visits_data
 
 
 # 企业画像-待走访问题
-class TestQiYeHuaXiang():
+class TestQiYeHuaXiang:
     visit_id = []
     del_visit_id = []
     update_visits_problem_comment_content = []
@@ -61,7 +50,7 @@ class TestQiYeHuaXiang():
         print(f"\n新增走访成功:{new_visits_response.json()}")
 
     @pytest.mark.新增待走访问题
-    @pytest.mark.parametrize("contents,sourceDepartments,sourcePersons", get_csv_visits_problem_data())
+    @pytest.mark.parametrize("contents,sourceDepartments,sourcePersons", get_csv_visits_data())
     def test_visits_problem(self, contents, sourceDepartments, sourcePersons):
         """
         1.新增 多个待走访问题
@@ -118,7 +107,7 @@ class TestQiYeHuaXiang():
         13.修改 为空
         """
         # 定义要更新的数据列表
-        update_data_list = get_csv_visits_problem_data()
+        update_data_list = get_csv_visits_data()
 
         # 没有数据跳过
         if not update_data_list:
@@ -217,5 +206,5 @@ class TestQiYeHuaXiang():
                 print(f"\n未知错误:{del_response.json()}")
 
 
-if __name__ == "__main__":
-    pytest.main([__file__, "-v", "-s"])
+    if __name__ == "__main__":
+        pytest.main([__file__, "-v", "-s"])
