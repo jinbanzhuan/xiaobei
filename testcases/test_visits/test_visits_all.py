@@ -1,7 +1,3 @@
-from dbm import error
-from logging import exception
-
-
 import pytest
 import requests
 import random
@@ -17,6 +13,7 @@ from utils.get_visits_data import get_csv_visits_data
 import urllib3
 
 urllib3.disable_warnings()
+from utils.get_visits_item_data import get_csv_visits_item_data
 
 
 class TestVisitsAll:
@@ -563,7 +560,7 @@ class TestVisitsAll:
             print(f"\n未知错误:{e}")
             traceback.print_exc()
         else:
-            print(f"[03]✅新增单个/多个走访成功 👍点赞👍👍\n")
+            print(f"[03]✅新增走访成功 👍点赞👍👍\n")
 
     @pytest.mark.新增多个走访
     def test_add_multiple_visits(self):
@@ -630,7 +627,7 @@ class TestVisitsAll:
             print(f"\n未知错误:{e}")
             traceback.print_exc()
         else:
-            print(f"[03]✅新增单个/多个走访成功 👍点赞👍👍\n")
+            print(f"[03]✅新增多个走访成功 👍点赞👍👍\n")
 
     @pytest.mark.新增背调事项
     def test_add_background_check_items(self):
@@ -732,21 +729,21 @@ class TestVisitsAll:
             print(f"[06]✅新增背调事项成功 🐮奶牛牛\n")
 
     @pytest.mark.新增多条背调事项
-    @pytest.mark.parametrize("item_question", get_csv_visits_data())
-    def test_add_multiple_background_check_items(self, item_question):
+    # @pytest.mark.parametrize("question", get_csv_visits_item_data())
+    def test_add_multiple_background_check_items(self):
         """
-        1, 新增有效等价类
+        1, 新增 有效等价类
         2, 新增 新增字母组合
-        3, 新增字符组合
-        4, 新增数字字符字母组合
-        5, 新增数字字符组合
-        6, 新增空格组合
-        7, 新增为空
-        8, 新增数字
-        9, 新增字符
-        10, 新增字母
-        11, 新增空格
-        12, 新增最长字段 待定还没问coder接口限制
+        3, 新增 字符组合
+        4, 新增 数字字符字母组合
+        5, 新增 数字字符组合
+        6, 新增 空格组合
+        7, 新增 数字
+        8, 新增 字符
+        9, 新增 字母
+        10, 新增 空格
+        11, 新增 最长字段 待定还没问coder接口限制
+        12,
         """
         item_id = []
         checklist_id = []
@@ -799,23 +796,21 @@ class TestVisitsAll:
                 checklist_id) > 0, f"\n[03]🙅新增checklist_id失败,列表为空:{checklist_id}"
             print(f"[03]✅查询checklistID成功:{get_checklist.json()['data']}")
 
-
             # ==================== [04]新增背调事项 ====================
-            add_background_check_items = requests.post(
-                url=f"{base_url}/api/v1/checklists/{checklist_id[0]}/items",
-                json={
-                    "question": item_question,
-                },
-                headers=self.headers,
-                verify=False
-            )
-            assert add_background_check_items.status_code == 200, f"\n[04]🙅新增背调事项失败,响应码错误:{add_background_check_items.status_code}"
-            if add_background_check_items.json()['code'] == -1:
-                print(f"[04]新增背调事项失败,返回值:{add_background_check_items.json()}")
-            print(f"[04]✅新增背调事项成功:{add_background_check_items.json()}")
-            item_id.append(add_background_check_items.json()['data']['id'])
-            # assert add_background_check_items.json()['data']['enterpriseId'] == enterprise_id[0]
-            print(f"[04]✅新增背调事项成功:{add_background_check_items.json()}")
+            for question in get_csv_visits_item_data():
+                add_background_check_items = requests.post(
+                    url=f"{base_url}/api/v1/checklists/{checklist_id[0]}/items",
+                    json={
+                        "question": question,
+                    },
+                    headers=self.headers,
+                    verify=False
+                )
+                assert add_background_check_items.status_code == 200, f"\n[04]🙅新增背调事项失败,响应码错误:{add_background_check_items.status_code}"
+                if add_background_check_items.json()['code'] == -1:
+                    print(f"[04]新增背调事项失败,返回值:{add_background_check_items.json()}")
+                print(f"[04]✅新增背调事项成功:{add_background_check_items.json()}")
+                item_id.append(add_background_check_items.json()['data']['id'])
 
             # ==================== [05]删除新增的背调事项 ====================
             del_background_check_items = requests.delete(
@@ -823,7 +818,7 @@ class TestVisitsAll:
                 headers=self.headers,
                 verify=False
             )
-            assert add_background_check_items.status_code == 200, f"\n[05]🙅查询新增的背调事项失败,响应码错误:{add_background_check_items.status_code}"
+            assert del_background_check_items.status_code == 200, f"\n[05]🙅查询新增的背调事项失败,响应码错误:{del_background_check_items.status_code}"
             print(f"[05]✅删除新增的背调事项成功:{del_background_check_items.json()}")
 
             # ==================== [06]闭环 ====================
@@ -845,7 +840,11 @@ class TestVisitsAll:
             print(f"\n未知错误:{e}")
             traceback.print_exc()
         else:
-            print(f"[06]✅新增背调事项成功 🐮奶牛牛\n")
+            print(f"[06]✅新增背调事项成功,🐮奶牛牛 点赞 👍\n")
+
+    # @pytest.mark.parametrize("item", get_csv_visits_item_data())
+    # def test_beta(self, item):
+    #     print(item)
 
     if __name__ == "__main__":
         pytest.main([__file__, "-v", "-s"])

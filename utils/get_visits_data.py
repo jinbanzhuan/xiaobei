@@ -18,6 +18,6 @@ def get_csv_visits_data():
             test_data.append((
                 contents,
                 sourceDepartments,
-                sourcePersons
+                sourcePersons,
             ))
     return test_data
