@@ -944,10 +944,10 @@ class TestVisitsAll:
 
                     if get_result.json()['data']['result'] != '':
                         logger.info(
-                            f"✅当前时间:{time.strftime('%Y-%m-%d %H:%M:%S')},当前接口状态 {get_result.json()['data']['status']},第 {cycle} 次整体循环 - 报告分析成功，尝试 {attempt} 次，耗时 {elapsed_time:.2f}秒")
+                            f"[06]✅当前时间:{time.strftime('%Y-%m-%d %H:%M:%S')},当前接口状态 {get_result.json()['data']['status']},第 {cycle} 次整体循环 - 报告分析成功，尝试 {attempt} 次，耗时 {elapsed_time:.2f}秒")
                         break
 
-                    logger.info(f"✅当前时间:{time.strftime('%Y-%m-%d %H:%M:%S')},当前接口状态 {get_result.json()['data']['status']},耗时 {elapsed_time:.2f}秒")
+                    logger.info(f"[06]✅当前时间:{time.strftime('%Y-%m-%d %H:%M:%S')},当前接口状态 {get_result.json()['data']['status']},耗时 {elapsed_time:.2f}秒")
                     time.sleep(2)
 
                 logger.info(f"========== 第 {cycle} 次整体循环结束 ==========\n")
