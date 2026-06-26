@@ -1,3 +1,4 @@
+import datetime
 import pytest
 import requests
 import random
@@ -9,11 +10,11 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from config.get_token import token
 from config.api_client import base_url
-from utils.get_visits_data import get_csv_visits_data
 import urllib3
 
 urllib3.disable_warnings()
 from utils.get_visits_item_data import get_csv_visits_item_data
+from utils.logger import get_logger
 
 
 class TestVisitsAll:
@@ -729,7 +730,6 @@ class TestVisitsAll:
             print(f"[06]✅新增背调事项成功 🐮奶牛牛\n")
 
     @pytest.mark.新增多条背调事项
-    # @pytest.mark.parametrize("question", get_csv_visits_item_data())
     def test_add_multiple_background_check_items(self):
         """
         1, 新增 有效等价类
@@ -842,9 +842,139 @@ class TestVisitsAll:
         else:
             print(f"[06]✅新增背调事项成功,🐮奶牛牛 点赞 👍\n")
 
-    # @pytest.mark.parametrize("item", get_csv_visits_item_data())
-    # def test_beta(self, item):
-    #     print(item)
+
+    def test_beta(self):
+        """
+        1, 新增单条背调事项
+        2, 新增多条背调事项 -还未补充
+        """
+        logger = get_logger()
+
+
+        for cycle in range(1, 5):
+
+            logger.info(f"========== 第 {cycle} 次整体循环开始 ==========")
+            logger.info(f"========== 当前时间 {time.strftime('%Y-%m-%d %H:%M:%S')}  ==========")
+
+            item_id = []
+            checklist_id = []
+            enterprise_id = []
+            visits_id = []
+            task_id = []
+
+            try:
+                # ==================== [01]获取随机企业id 存入enterprise_id ====================
+                random_number = random.randint(0, 99)
+                get_enterprises = requests.get(
+                    url=f"{base_url}/api/v1/enterprises?pageSize=100&page=1",
+                    headers=self.headers,
+                    verify=False
+                )
+                assert get_enterprises.status_code == 200, f"\n[01]🙅获取随机企业失败,响应码错误:{get_enterprises.status_code}"
+                enterprise_id.append(get_enterprises.json()['data']['list'][random_number]['id'])
+                assert enterprise_id is not None and len(
+                    enterprise_id) > 0, f"\n[01]🙅add随机企业id失败,列表为空:{enterprise_id}"
+                logger.info(f"[01]✅获取随机企业id成功:{enterprise_id}")
+
+                # ==================== [02]新增走访 ====================
+                add_visits = requests.post(
+                    url=f"{base_url}/api/v1/visits",
+                    json={
+                        "enterpriseId": enterprise_id[0],
+                        "visitors": ["金阳"],
+                        "participants": [{"name": "金阳"}],
+                        "source": "手动录入"
+                    },
+                    headers=self.headers,
+                    verify=False
+                )
+                assert add_visits.status_code == 200, f"\n[02]🙅新增走访失败,响应码错误:{add_visits.status_code}"
+                assert add_visits.json()['data']['enterpriseId'] == enterprise_id[
+                    0], f"\n[02]🙅企业id不一致,返回值enterpriseId:{add_visits.json()['data']['enterpriseId']},列表enterpriseId{enterprise_id[0]}"
+                visits_id.append(add_visits.json()['data']['id'])
+                logger.info(f"[02]✅新增走访:{add_visits.json()['data']}")
+
+                # ==================== [03]查询checklistID ====================
+                get_checklist = requests.post(
+                    url=f"{base_url}/api/v1/visits/{visits_id[0]}/checklist/generate",
+                    headers=self.headers,
+                    verify=False
+                )
+                assert get_checklist.status_code == 200, f"\n[03]🙅新增走访失败,响应码错误:{add_visits.status_code}"
+                checklist_id.append(get_checklist.json()['data']['taskId'])
+                logger.info(f"[03]✅查询checklistID成功:{get_checklist.json()['data']}")
+
+                # ==================== [04]新增背调事项 ====================
+                add_background_check_items = requests.post(
+                    url=f"{base_url}/api/v1/checklists/{checklist_id[0]}/items",
+                    json={
+                        "question": "公司的合规与ESG有没有随时引爆的雷？",
+                    },
+                    headers=self.headers,
+                    verify=False
+                )
+                assert add_background_check_items.status_code == 200, f"\n[04]🙅新增背调事项失败,响应码错误:{add_background_check_items.status_code}"
+                item_id.append(add_background_check_items.json()['data']['id'])
+                logger.info(f"[04]✅新增背调事项成功:{add_background_check_items.json()}")
+
+                # ==================== [05]获取taskid ====================
+                get_task_id = requests.post(
+                    url=f"{base_url}/api/v1/visits/{visits_id[0]}/report/generate",
+                    headers=self.headers,
+                    verify=False
+                )
+                assert get_task_id.status_code == 200, f"\n[05]🙅获取taskid失败,响应码错误:{get_task_id.status_code}"
+                logger.info(f"[05]✅获取taskid成功:{get_task_id.json()}")
+                task_id.append(get_task_id.json()['data']['taskId'])
+
+                # ==================== [06]查看分析结果 ====================
+                attempt = 0
+                start_time = time.time()
+
+                while True:
+                    attempt += 1
+                    get_result = requests.get(
+                        url=f"{base_url}/api/v1/tasks/{task_id[0]}",
+                        headers=self.headers,
+                        verify=False
+                    )
+                    assert get_result.status_code == 200, f"\n[06]🙅查询taskid失败,响应码错误:{get_result.status_code}"
+
+                    elapsed_time = time.time() - start_time
+
+                    if get_result.json()['data']['result'] != '':
+                        logger.info(
+                            f"✅当前时间:{time.strftime('%Y-%m-%d %H:%M:%S')},当前接口状态 {get_result.json()['data']['status']},第 {cycle} 次整体循环 - 报告分析成功，尝试 {attempt} 次，耗时 {elapsed_time:.2f}秒")
+                        break
+
+                    logger.info(f"✅当前时间:{time.strftime('%Y-%m-%d %H:%M:%S')},当前接口状态 {get_result.json()['data']['status']},耗时 {elapsed_time:.2f}秒")
+                    time.sleep(2)
+
+                logger.info(f"========== 第 {cycle} 次整体循环结束 ==========\n")
+
+            except Exception as e:
+                logger.error(f"❌第 {cycle} 次整体循环失败: {e}")
+                logger.error(f"========== 第 {cycle} 次整体循环异常结束 ==========\n")
+                continue
+
+            # ==================== [07]删除新增的背调事项 ====================
+            # del_background_check_items = requests.delete(
+            #     url=f"{base_url}/api/v1/checklist-items/{item_id[0]}",
+            #     headers=self.headers,
+            #     verify=False
+            # )
+            # assert add_background_check_items.status_code == 200, f"\n[05]🙅查询新增的背调事项失败,响应码错误:{add_background_check_items.status_code}"
+            # print(f"[08]✅删除新增的背调事项成功:{add_background_check_items.json()}")
+
+            # ==================== [09]闭环 ====================
+            # del_visits = requests.delete(
+            #     url=f"{base_url}/api/v1/visits/{visits_id[0]}",
+            #     headers=self.headers,
+            #     verify=False
+            # )
+            # assert del_visits.status_code == 200, f"\n[06]🙅删除走访失败,响应码错误:{del_visits.status_code}"
+            # assert del_visits.json()['code'] == 0, f"\n[06]🙅删除走访失败:{del_visits.json()}"
+
 
     if __name__ == "__main__":
         pytest.main([__file__, "-v", "-s"])
