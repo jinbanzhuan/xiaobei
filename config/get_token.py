@@ -7,13 +7,27 @@ import time
 # 优先级:
 #   1. .env.local 里显式配的 XIAOBEI_TOKEN(直接使用,不做过期检查)
 #   2. .env.local 里的 NORTH_NOVA_BO_AUTH JSON(检查 expiresAt,没过期就用)
-#   3. Playwright 打开浏览器 → 飞书扫码 → 从 localStorage 抓 token → 写回 .env.local
+#   3. 本文件内嵌的 _DEFAULT_AUTH_JSON(仓库 seed, 保证 git clone 后开箱即用)
+#   4. Playwright 打开浏览器 → 飞书扫码 → 从 localStorage 抓 token → 写回 .env.local
 #
 # 首次使用:会弹出 Chromium 窗口让你扫码,扫完自动关闭
 # 之后使用:浏览器数据被缓存到 BROWSER_DATA_DIR,大概率无需重新扫码
 # ============================================
 
 env_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env.local")
+
+# ============================================
+# 内嵌 seed token —— 用于 git pull 后无 .env.local 也能跑
+# ⚠️ 是真 JWT, 到 expiresAt 之后会自动失效, 届时代码会自动走 Playwright 分支重新扫码
+# ⚠️ 不要把过期时间很长的长期 token 放这里; 出问题请重新扫码后手动替换
+# ============================================
+_DEFAULT_AUTH_JSON = {
+    "userId": "910c4f2d-5734-4d54-8cb9-8c3c64b66d13",
+    "tenantId": "d923297c-5912-494b-927c-0000c70ee8e4",
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3ODQyNzk2MDMsImlhdCI6MTc4MzY3NDgwMywidGVuYW50X2lkIjoiZDkyMzI5N2MtNTkxMi00OTRiLTkyN2MtMDAwMGM3MGVlOGU0IiwidXNlcl9pZCI6IjkxMGM0ZjJkLTU3MzQtNGQ1NC04Y2I5LThjM2M2NGI2NmQxMyJ9.BPG7058Hom_aNiEhYd32JUNEH5_cbwf-d4yQFT1yvPw",
+    "expiresAt": 1784279603,
+    "username": "金阳",
+}
 
 # 浏览器数据持久化目录:飞书 cookie / 小贝 session 都在这里
 # 一次扫码后,后续启动是"已登录"状态,不用再扫
@@ -42,6 +56,7 @@ def get_env_value(key):
     """
     从 .env.local 里读取指定配置
     优先级: 系统环境变量 > .env.local 文件
+    .env.local 不存在时静默返回空串, 交给上层走内嵌 seed / 浏览器兜底
     """
     if os.getenv(key):
         return os.getenv(key)
@@ -59,26 +74,33 @@ def get_env_value(key):
 
         return ""
 
+    except FileNotFoundError:
+        return ""
     except Exception as e:
         print(f"读取.env.local失败: {e}")
-        raise
+        return ""
 
 
 def update_env_local(key, value):
     """
-    更新 .env.local 里的某个 key(不存在则追加)
+    更新 .env.local 里的某个 key(不存在则追加; 文件不存在则新建)
     Playwright 抓到新 token 后自动写回,下次跑不用重开浏览器
     """
     lines = []
     found = False
     try:
-        with open(env_path, "r", encoding="utf-8") as f:
-            for line in f:
-                if line.strip().startswith(f"{key}="):
-                    lines.append(f"{key}={value}\n")
-                    found = True
-                else:
-                    lines.append(line)
+        try:
+            with open(env_path, "r", encoding="utf-8") as f:
+                for line in f:
+                    if line.strip().startswith(f"{key}="):
+                        lines.append(f"{key}={value}\n")
+                        found = True
+                    else:
+                        lines.append(line)
+        except FileNotFoundError:
+            # 首次跑, .env.local 还不存在, 直接新建
+            pass
+
         if not found:
             if lines and not lines[-1].endswith("\n"):
                 lines.append("\n")
@@ -217,7 +239,8 @@ def get_dev_token():
     优先级:
     1. XIAOBEI_TOKEN 环境变量/配置 → 直接返回(不做过期检查)
     2. NORTH_NOVA_BO_AUTH 里的 accessToken → 检查 expiresAt,没过期就返回
-    3. 上面都失败 → Playwright 开浏览器抓 token,并回写 .env.local
+    3. _DEFAULT_AUTH_JSON 内嵌 seed → 检查 expiresAt,没过期就用(git clone 后开箱即用)
+    4. 上面都失败 → Playwright 开浏览器抓 token,并回写 .env.local
     """
     # 路径 1: 显式配置的 XIAOBEI_TOKEN(测试专用长期 token 场景)
     manual_token = get_env_value("XIAOBEI_TOKEN")
@@ -234,11 +257,18 @@ def get_dev_token():
         print(f"✅ 使用 .env.local 里的 token (剩余 {remaining_days} 天)")
         return auth_json["accessToken"]
 
-    # 路径 3: 兜底 —— 开浏览器抓
+    # 路径 3: 用本文件内嵌的 seed token(git clone 后开箱即用)
+    if _is_auth_valid(_DEFAULT_AUTH_JSON):
+        exp = _DEFAULT_AUTH_JSON.get("expiresAt", 0)
+        remaining_days = (exp - int(time.time())) // 86400
+        print(f"✅ 使用代码内嵌 seed token (剩余 {remaining_days} 天)")
+        return _DEFAULT_AUTH_JSON["accessToken"]
+
+    # 路径 4: 兜底 —— 开浏览器抓
     if auth_json:
         print("⚠️ .env.local 里的 token 已过期,启动浏览器重新获取...")
     else:
-        print("ℹ️ .env.local 里没有 token,启动浏览器获取...")
+        print("ℹ️ 无可用 token(.env.local 和内嵌 seed 均无效),启动浏览器获取...")
 
     new_auth = _fetch_token_via_browser()
 

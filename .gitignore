@@ -1,0 +1,29 @@
+# ===== 敏感配置 =====
+# 本地私有变量、token、密钥。必须不提交
+.env.local
+.env
+.env.*.local
+
+# ===== macOS =====
+.DS_Store
+
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# ===== IDE =====
+.idea/
+.vscode/
+*.iml
+
+# ===== 运行时产物 =====
+logs/
+*.log
