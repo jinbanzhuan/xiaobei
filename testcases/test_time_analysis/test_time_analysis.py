@@ -14,12 +14,20 @@ class TestTimeAnalysis:
     # base_url = "https://dev-bo-api.xiaobei.top"
     # base_url = "http://localhost:12888/"
     logger = get_logger()
-    feishu_url = "https://fcn6bo5q7kmm.feishu.cn/docx/HNNTdbNocojItcxLzf8cwZ7Enfh"
+    feishu_url = "https://fcn6bo5q7kmm.feishu.cn/minutes/obcnn93hqjwgf17o1l6x4ys8"
     headers = {
         "accept-language": "zh-CN,zh;q=0.9",
         "Content-Type": "application/json",
         "Authorization": f"Bearer {token}",
     }
+
+    # ==================== 飞书妙计 ====================
+    # 	思特威（上海）电子科技股份有限公司：https://fcn6bo5q7kmm.feishu.cn/minutes/obcnn9zfzlfv674772q6u2sp
+    # 	上海米哈游网络科技股份有限公司：https://fcn6bo5q7kmm.feishu.cn/minutes/obcnn93hqjwgf17o1l6x4ys8
+
+    # ==================== 走访公司 ====================
+    # 思特威（上海）电子科技股份有限公司:5cceb7a9-c6dd-4ef7-9d82-32e7f76285ad
+    # 上海米哈游网络科技股份有限公司:0e9128e8-af58-4d0d-9b7e-b818a1dac7cc
 
     def test_analysis(self):
         """
@@ -40,9 +48,8 @@ class TestTimeAnalysis:
 
             try:
                 # ==================== [01]获取指定企业id 存入enterprise_id ====================
-                target_enterprise_name = "思特威（上海）电子科技股份有限公司"
-                # 思特威（上海）电子科技股份有限公司:5cceb7a9-c6dd-4ef7-9d82-32e7f76285ad
-                # 上海米哈游网络科技股份有限公司:0e9128e8-af58-4d0d-9b7e-b818a1dac7cc
+                target_enterprise_name = "上海米哈游网络科技股份有限公司"
+
                 get_enterprises = requests.get(
                     url=f"{base_url}/api/v1/enterprises?pageSize=1000&page=1",
                     headers=self.headers,

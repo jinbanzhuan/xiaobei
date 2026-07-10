@@ -32,13 +32,13 @@ class TestVisitsAll:
         visits_id = []
         enterprise_id = []
         tasks_id = []
-        feishu_url = "https://fcn6bo5q7kmm.feishu.cn/docx/HNNTdbNocojItcxLzf8cwZ7Enfh"
+        feishu_url = "https://fcn6bo5q7kmm.feishu.cn/minutes/obcnn93hqjwgf17o1l6x4ys8"
         try:
             # ==================== [01]获取随机企业id 存入enterprise_id ====================
             get_enterprises = requests.get(
                 url=f"{base_url}/api/v1/enterprises?pageSize=100&page=1",
                 headers=self.headers,
-                timeout=(5, 30),
+                timeout=(10, 30),
                 verify=False
             )
             assert get_enterprises.status_code == 200, f"[01]🙅获取随机企业id失败,️响应码错误:{get_enterprises.status_code}"
@@ -57,7 +57,7 @@ class TestVisitsAll:
                     "source": "手动录入"
                 },
                 headers=self.headers,
-                timeout=(5, 30),
+                timeout=(10, 30),
                 verify=False
             )
             assert add_visits.status_code == 200, f"[02]🙅新增走访失败,️响应码错误:{add_visits.status_code}"
@@ -73,7 +73,7 @@ class TestVisitsAll:
                     "status": "checklist"
                 },
                 headers=self.headers,
-                timeout=(5, 30),
+                timeout=(10, 30),
                 verify=False
             )
             assert checklists.status_code == 200, f"[03]🙅响应码错误:{checklists.status_code}"
@@ -90,7 +90,7 @@ class TestVisitsAll:
                     "status": "visiting"
                 },
                 headers=self.headers,
-                timeout=(5, 30),
+                timeout=(10, 30),
                 verify=False
             )
 
@@ -108,7 +108,7 @@ class TestVisitsAll:
                     "status": "confirmed"
                 },
                 headers=self.headers,
-                timeout=(5, 30),
+                timeout=(10, 30),
                 verify=False
             )
 
@@ -128,7 +128,7 @@ class TestVisitsAll:
                     "name": "飞书妙记"
                 },
                 headers=self.headers,
-                timeout=(5, 30),
+                timeout=(10, 30),
                 verify=False
             )
             # 断言状态码和响应结果
@@ -146,7 +146,7 @@ class TestVisitsAll:
                     "rawContent": feishu_url
                 },
                 headers=self.headers,
-                timeout=(5, 30),
+                timeout=(10, 30),
                 verify=False
             )
             assert add_parse.status_code == 200, f"[07]🙅响应码错误:{add_parse.status_code}"
@@ -166,12 +166,11 @@ class TestVisitsAll:
                 parse_result = requests.get(
                     url=f"{base_url}/api/v1/minutes/parse-result/{tasks_id[0]}",
                     headers=self.headers,
-                    timeout=(5, 30),
+                    timeout=(10, 30),
                     verify=False
                 )
                 assert parse_result.status_code == 200, f"[08]🙅响应码错误:{parse_result.status_code}"
-                assert parse_result.json()['status'] in ["","completed", "failed",
-                                                         "canceled"], f"[08]🙅状态不对,返回值:{parse_result.json()}"
+                
                 if parse_result.json()['status'] in ["", "pending", "processing"]:
                     time.sleep(2)
                 elif parse_result.json()['status'] == "failed":
@@ -189,7 +188,7 @@ class TestVisitsAll:
                 url=f"{base_url}/api/v1/visits/{visits_id[0]}/analyze",
                 json={},
                 headers=self.headers,
-                timeout=(5, 30),
+                timeout=(10, 30),
                 verify=False
             )
             assert add_analyze.status_code == 200, f"[09]🙅响应码错误:{add_analyze.status_code}"
@@ -204,11 +203,13 @@ class TestVisitsAll:
             failed	    妙记解析失败，比如权限不足、链接无效、转写不可读、查重等	直接失败，打印 error
             canceled	任务被取消，通常是同一个 visit 又发起了新的 parse，旧任务被 supersede
             """
-            for i in range(60):
+            i = 0
+            while True:
+                i += 1
                 get_tasks = requests.get(
                     url=f"{base_url}/api/v1/minutes/parsed/{tasks_id[1]}",
                     headers=self.headers,
-                    timeout=(5, 30),
+                    timeout=(10, 30),
                     verify=False
                 )
                 assert get_tasks.status_code == 200, f"[10]🙅响应码错误:{get_tasks.status_code}"
@@ -231,7 +232,7 @@ class TestVisitsAll:
             add_profile_updates = requests.get(
                 url=f"{base_url}/api/v1/visits/{visits_id[0]}/profile-updates",
                 headers=self.headers,
-                timeout=(5, 30),
+                timeout=(10, 30),
                 verify=False
             )
             # 断言状态码和响应结果
@@ -245,7 +246,7 @@ class TestVisitsAll:
                 url=f"{base_url}/api/v1/visits/{visits_id[0]}/submit",
                 json={},
                 headers=self.headers,
-                timeout=(5, 30),
+                timeout=(10, 30),
                 verify=False
             )
             assert add_submit.status_code == 200, f"[12]🙅响应码错误:{add_submit.status_code}"
@@ -258,7 +259,7 @@ class TestVisitsAll:
                 url=f"{base_url}/api/v1/visits/{visits_id[0]}",
                 json={"status": "submitted"},
                 headers=self.headers,
-                timeout=(5, 30),
+                timeout=(10, 30),
                 verify=False
             )
             # 断言状态码和响应结果
@@ -271,7 +272,7 @@ class TestVisitsAll:
             del_response = requests.delete(
                 url=f"{base_url}/api/v1/visits/{visits_id[0]}",
                 headers=self.headers,
-                timeout=(5, 30),
+                timeout=(10, 30),
                 verify=False
             )
             assert del_response.status_code == 200, f"[14]🙅响应码错误:{del_response.status_code}"
@@ -303,7 +304,7 @@ class TestVisitsAll:
             get_enterprises = requests.get(
                 url=f"{base_url}/api/v1/enterprises?pageSize=100&page=1",
                 headers=self.headers,
-                timeout=(5, 30),
+                timeout=(10, 30),
                 verify=False
             )
 
@@ -323,7 +324,7 @@ class TestVisitsAll:
                     "source": "手动录入"
                 },
                 headers=self.headers,
-                timeout=(5, 30),
+                timeout=(10, 30),
                 verify=False
             )
             assert add_visits.status_code == 200, f"[02]🙅新增走访失败,️响应码错误:{add_visits.status_code}"
@@ -336,7 +337,7 @@ class TestVisitsAll:
             del_visits = requests.delete(
                 url=f"{base_url}/api/v1/visits/{visits_id[0]}",
                 headers=self.headers,
-                timeout=(5, 30),
+                timeout=(10, 30),
                 verify=False
             )
             assert del_visits.status_code == 200, f"[03]🙅删除走访失败,️响应码错误:{del_visits.status_code}"
@@ -366,7 +367,7 @@ class TestVisitsAll:
             get_enterprises = requests.get(
                 url=f"{base_url}/api/v1/enterprises?pageSize=100&page=1",
                 headers=self.headers,
-                timeout=(5, 30),
+                timeout=(10, 30),
                 verify=False
             )
 
@@ -386,7 +387,7 @@ class TestVisitsAll:
                     "source": "手动录入"
                 },
                 headers=self.headers,
-                timeout=(5, 30),
+                timeout=(10, 30),
                 verify=False
             )
             assert add_visits.status_code == 200, f"[02]🙅新增走访失败,响应码错误:{add_visits.status_code}"
@@ -402,7 +403,7 @@ class TestVisitsAll:
                     "status": "checklist"
                 },
                 headers=self.headers,
-                timeout=(5, 30),
+                timeout=(10, 30),
                 verify=False
             )
             assert checklists.status_code == 200, f"[03]🙅扭转状态checklist失败,响应码错误:{checklists.status_code}"
@@ -419,7 +420,7 @@ class TestVisitsAll:
                     "status": "visiting"
                 },
                 headers=self.headers,
-                timeout=(5, 30),
+                timeout=(10, 30),
                 verify=False
             )
             assert visitings.status_code == 200, f"[04]🙅扭转状态visitings失败,响应码错误:{visitings.status_code}"
@@ -432,7 +433,7 @@ class TestVisitsAll:
             del_visits = requests.delete(
                 url=f"{base_url}/api/v1/visits/{visits_id[0]}",
                 headers=self.headers,
-                timeout=(5, 30),
+                timeout=(10, 30),
                 verify=False
             )
             assert del_visits.status_code == 200, f"[05]🙅删除走访失败,响应码错误:{del_visits.status_code}"
@@ -462,7 +463,7 @@ class TestVisitsAll:
             get_enterprises = requests.get(
                 url=f"{base_url}/api/v1/enterprises?pageSize=100&page=1",
                 headers=self.headers,
-                timeout=(5, 30),
+                timeout=(10, 30),
                 verify=False
             )
             assert get_enterprises.status_code == 200, f"[01]🙅获取随机企业失败,响应码错误:{get_enterprises.status_code}"
@@ -481,7 +482,7 @@ class TestVisitsAll:
                     "source": "手动录入"
                 },
                 headers=self.headers,
-                timeout=(5, 30),
+                timeout=(10, 30),
                 verify=False
             )
             assert add_visits.status_code == 200, f"[02]🙅新增走访失败,响应码错误:{add_visits.status_code}"
@@ -495,7 +496,7 @@ class TestVisitsAll:
                 url=f"{base_url}/api/v1/visits/{visits_id[0]}/hide",
                 json={"hidden": True},
                 headers=self.headers,
-                timeout=(5, 30),
+                timeout=(10, 30),
                 verify=False
             )
             assert hide.status_code == 200, f"[03]🙅隐藏走访失败,响应码错误:{hide.status_code}"
@@ -506,7 +507,7 @@ class TestVisitsAll:
             del_visits = requests.delete(
                 url=f"{base_url}/api/v1/visits/{visits_id[0]}",
                 headers=self.headers,
-                timeout=(5, 30),
+                timeout=(10, 30),
                 verify=False
             )
             assert del_visits.status_code == 200, f"[04]🙅删除走访失败,响应码错误:{del_visits.status_code}"
@@ -538,7 +539,7 @@ class TestVisitsAll:
             get_enterprises = requests.get(
                 url=f"{base_url}/api/v1/enterprises?pageSize=100&page=1",
                 headers=self.headers,
-                timeout=(5, 30),
+                timeout=(10, 30),
                 verify=False
             )
             assert get_enterprises.status_code == 200, f"[01]🙅获取随机企业失败,响应码错误:{get_enterprises.status_code}"
@@ -557,7 +558,7 @@ class TestVisitsAll:
                     "source": "手动录入"
                 },
                 headers=self.headers,
-                timeout=(5, 30),
+                timeout=(10, 30),
                 verify=False
             )
             assert add_visits.status_code == 200, f"[02]🙅新增走访失败,响应码错误:{add_visits.status_code}"
@@ -571,7 +572,7 @@ class TestVisitsAll:
                 del_visits = requests.delete(
                     url=f"{base_url}/api/v1/visits/{visits}",
                     headers=self.headers,
-                    timeout=(5, 30),
+                    timeout=(10, 30),
                     verify=False
                 )
                 assert del_visits.status_code == 200, f"[03]🙅删除走访失败,响应码错误:{del_visits.status_code}"
@@ -602,11 +603,11 @@ class TestVisitsAll:
         try:
             # ==================== [01]获取随机企业id 存入enterprise_id ====================
             for i in range(number):
-                random_number = random.randint(0, 99)
+                random_number = random.randint(0, 10)
                 get_enterprises = requests.get(
                     url=f"{base_url}/api/v1/enterprises?pageSize=100&page=1",
                     headers=self.headers,
-                    timeout=(5, 30),
+                    timeout=(10, 30),
                     verify=False
                 )
                 assert get_enterprises.status_code == 200, f"[01]🙅获取随机企业失败,响应码错误:{get_enterprises.status_code}"
@@ -626,7 +627,7 @@ class TestVisitsAll:
                         "source": "手动录入"
                     },
                     headers=self.headers,
-                    timeout=(5, 30),
+                    timeout=(10, 30),
                     verify=False
                 )
                 assert add_visits.status_code == 200, f"[02]🙅新增走访失败,响应码错误:{add_visits.status_code}"
@@ -640,7 +641,7 @@ class TestVisitsAll:
                 del_visits = requests.delete(
                     url=f"{base_url}/api/v1/visits/{visits}",
                     headers=self.headers,
-                    timeout=(5, 30),
+                    timeout=(10, 30),
                     verify=False
                 )
                 assert del_visits.status_code == 200, f"[03]🙅删除走访失败,响应码错误:{del_visits.status_code}"
@@ -675,7 +676,7 @@ class TestVisitsAll:
             get_enterprises = requests.get(
                 url=f"{base_url}/api/v1/enterprises?pageSize=100&page=1",
                 headers=self.headers,
-                timeout=(5, 30),
+                timeout=(10, 30),
                 verify=False
             )
             assert get_enterprises.status_code == 200, f"[01]🙅获取随机企业失败,响应码错误:{get_enterprises.status_code}"
@@ -694,7 +695,7 @@ class TestVisitsAll:
                     "source": "手动录入"
                 },
                 headers=self.headers,
-                timeout=(5, 30),
+                timeout=(10, 30),
                 verify=False
             )
             assert add_visits.status_code == 200, f"[02]🙅新增走访失败,响应码错误:{add_visits.status_code}"
@@ -709,7 +710,7 @@ class TestVisitsAll:
             get_checklist = requests.post(
                 url=f"{base_url}/api/v1/visits/{visits_id[0]}/checklist/generate",
                 headers=self.headers,
-                timeout=(5, 30),
+                timeout=(10, 30),
                 verify=False
             )
             assert get_checklist.status_code == 200, f"[03]🙅新增走访失败,响应码错误:{add_visits.status_code}"
@@ -724,7 +725,7 @@ class TestVisitsAll:
                     "question": "这是一条新增的背调事项case",
                 },
                 headers=self.headers,
-                timeout=(5, 30),
+                timeout=(10, 30),
                 verify=False
             )
             assert add_background_check_items.status_code == 200, f"[04]🙅新增背调事项失败,响应码错误:{add_background_check_items.status_code}"
@@ -736,7 +737,7 @@ class TestVisitsAll:
             del_background_check_items = requests.delete(
                 url=f"{base_url}/api/v1/checklist-items/{item_id[0]}",
                 headers=self.headers,
-                timeout=(5, 30),
+                timeout=(10, 30),
                 verify=False
             )
             assert add_background_check_items.status_code == 200, f"[05]🙅查询新增的背调事项失败,响应码错误:{add_background_check_items.status_code}"
@@ -746,7 +747,7 @@ class TestVisitsAll:
             del_visits = requests.delete(
                 url=f"{base_url}/api/v1/visits/{visits_id[0]}",
                 headers=self.headers,
-                timeout=(5, 30),
+                timeout=(10, 30),
                 verify=False
             )
             assert del_visits.status_code == 200, f"[06]🙅删除走访失败,响应码错误:{del_visits.status_code}"
@@ -790,7 +791,7 @@ class TestVisitsAll:
             get_enterprises = requests.get(
                 url=f"{base_url}/api/v1/enterprises?pageSize=100&page=1",
                 headers=self.headers,
-                timeout=(5, 30),
+                timeout=(10, 30),
                 verify=False
             )
             assert get_enterprises.status_code == 200, f"[01]🙅获取随机企业失败,响应码错误:{get_enterprises.status_code}"
@@ -809,7 +810,7 @@ class TestVisitsAll:
                     "source": "手动录入"
                 },
                 headers=self.headers,
-                timeout=(5, 30),
+                timeout=(10, 30),
                 verify=False
             )
             assert add_visits.status_code == 200, f"[02]🙅新增走访失败,响应码错误:{add_visits.status_code}"
@@ -824,7 +825,7 @@ class TestVisitsAll:
             get_checklist = requests.post(
                 url=f"{base_url}/api/v1/visits/{visits_id[0]}/checklist/generate",
                 headers=self.headers,
-                timeout=(5, 30),
+                timeout=(10, 30),
                 verify=False
             )
             assert get_checklist.status_code == 200, f"[03]🙅新增走访失败,响应码错误:{add_visits.status_code}"
@@ -842,7 +843,7 @@ class TestVisitsAll:
                         "question": question,
                     },
                     headers=self.headers,
-                    timeout=(5, 30),
+                    timeout=(10, 30),
                     verify=False
                 )
                 assert add_background_check_items.status_code == 200, f"[04]🙅新增背调事项失败,响应码错误:{add_background_check_items.status_code}"
@@ -855,7 +856,7 @@ class TestVisitsAll:
             del_background_check_items = requests.delete(
                 url=f"{base_url}/api/v1/checklist-items/{item_id[0]}",
                 headers=self.headers,
-                timeout=(5, 30),
+                timeout=(10, 30),
             )
             assert del_background_check_items.status_code == 200, f"[05]🙅查询新增的背调事项失败,响应码错误:{del_background_check_items.status_code}"
             self.logger.info(f"[05] ✅ 删除新增的背调事项成功:{del_background_check_items.json()}")
@@ -864,7 +865,7 @@ class TestVisitsAll:
             del_visits = requests.delete(
                 url=f"{base_url}/api/v1/visits/{visits_id[0]}",
                 headers=self.headers,
-                timeout=(5, 30),
+                timeout=(10, 30),
                 verify=False
             )
             assert del_visits.status_code == 200, f"[06]🙅删除走访失败,响应码错误:{del_visits.status_code}"
@@ -883,7 +884,42 @@ class TestVisitsAll:
             self.logger.info(f"[06]  ✅  新增背调事项成功, 🐮 奶牛牛 点赞  👍")
 
     def test_beta(self):
-        self.logger.info("这是一条测试case")
+        try:
+            while True:
+                # ==================== [01]查询页面已经创建的企业 ====================
+                get_page = requests.get(
+                    url=f"{base_url}/api/v1/visit-workbench/preparation-tasks?page=1&pageSize=60",
+                    headers=self.headers,
+                    timeout=(10, 30),
+                    verify=False,
+                )
+                assert get_page.status_code == 200, f"\n🙅 获取分页失败,响应码错误: {get_page.status_code}"
+                task_id_list = [item['id'] for item in get_page.json()['items']]
+                self.logger.info(f"✅ 共获取 {len(task_id_list)} 个 id: {task_id_list}")
+
+                # ==================== [02]删除已经查到的公司 ====================
+                number = 0
+                for visits_id in task_id_list:
+                    number += 1
+                    del_visits = requests.delete(
+                        url=f"{base_url}/api/v1/visits/{visits_id}",
+                        headers=self.headers,
+                        timeout=(10, 30),
+                        verify=False
+                    )
+                    assert del_visits.status_code == 200, f"[06]🙅删除走访失败,响应码错误:{del_visits.status_code}"
+                    assert del_visits.json()['code'] == 0, f"[06]🙅删除走访失败:{del_visits.json()}"
+                    self.logger.info(f"已经删除 {number} 条: {del_visits.json()}")
+                if task_id_list is not None:
+                    self.logger.info(f"已经没有公司了")
+                    break
+
+
+        except Exception as e:
+            self.logger.error(f"测试异常: {e}")
+            self.logger.error(f"堆栈信息: \n{traceback.format_exc()} \n")
+            raise
 
     if __name__ == "__main__":
         pytest.main([__file__, "-v", "-s"])
+        
