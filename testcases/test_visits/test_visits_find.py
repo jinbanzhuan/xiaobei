@@ -6,9 +6,11 @@ import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 from config.get_token import TOKEN
 from config.api_client import BASE_URL
+from config.logger import get_logger
 
 
 class TestApiClient:
+    logger = get_logger()
     headers = {
         "Authorization": f"Bearer {TOKEN}",
         "Content-Type": "application/json",
@@ -77,7 +79,7 @@ class TestApiClient:
         # assert attachment["storagePath"].startswith(
         #     f"enterprises/{self.enterprise_id}/attachments/"
         # )
-        print(f"\n企业附件登记成功: {attachment}")
+        self.logger.info(f"✅ 企业附件登记成功: {attachment}")
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v", "-s"])

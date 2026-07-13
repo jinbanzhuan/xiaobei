@@ -2,6 +2,10 @@ import json
 import os
 import time
 
+from config.logger import get_logger
+
+logger = get_logger(__name__)
+
 # ============================================
 # 小贝 token 获取
 # 优先级:
@@ -77,7 +81,7 @@ def get_env_value(key):
     except FileNotFoundError:
         return ""
     except Exception as e:
-        print(f"读取.env.local失败: {e}")
+        logger.error(f"读取.env.local失败: {e}")
         return ""
 
 
@@ -109,7 +113,7 @@ def update_env_local(key, value):
         with open(env_path, "w", encoding="utf-8") as f:
             f.writelines(lines)
     except Exception as e:
-        print(f"⚠️ 写入 .env.local 失败(不影响本次运行): {e}")
+        logger.warning(f"⚠️ 写入 .env.local 失败(不影响本次运行): {e}")
 
 
 def _parse_auth_json(auth_text):
@@ -119,7 +123,7 @@ def _parse_auth_json(auth_text):
     try:
         return json.loads(auth_text)
     except Exception as e:
-        print(f"⚠️ 解析 NORTH_NOVA_BO_AUTH 失败: {e}")
+        logger.warning(f"⚠️ 解析 NORTH_NOVA_BO_AUTH 失败: {e}")
         return None
 
 
@@ -152,9 +156,9 @@ def _fetch_token_via_browser():
     is_first_time = not os.path.exists(BROWSER_DATA_DIR)
 
     if is_first_time:
-        print("🌐 首次登录,即将打开 Chromium 浏览器,请用飞书扫码...")
+        logger.info("🌐 首次登录,即将打开 Chromium 浏览器,请用飞书扫码...")
     else:
-        print("🌐 尝试用缓存的浏览器数据登录...")
+        logger.info("🌐 尝试用缓存的浏览器数据登录...")
 
     with sync_playwright() as p:
         ctx = p.chromium.launch_persistent_context(
@@ -189,7 +193,7 @@ def _fetch_token_via_browser():
             try:
                 cur_url = login_page.url
                 if cur_url != last_login_url:
-                    print(f"🔍 登录页跳转: {cur_url}")
+                    logger.info(f"🔍 登录页跳转: {cur_url}")
                     last_login_url = cur_url
             except Exception:
                 pass
@@ -253,21 +257,21 @@ def get_dev_token():
     if _is_auth_valid(auth_json):
         exp = auth_json.get("expiresAt", 0)
         remaining_days = (exp - int(time.time())) // 86400
-        print(f"✅ 使用 .env.local 里的 token (剩余 {remaining_days} 天)")
+        logger.info(f"✅ 使用 .env.local 里的 token (剩余 {remaining_days} 天)")
         return auth_json["accessToken"]
 
     # 路径 3: 用本文件内嵌的 seed token(git clone 后开箱即用)
-    if _is_auth_valid(_DEFAULT_AUTH_JSON):
+    if _is_auth_valid(_DEFAULT_AUTH_JSON):  
         exp = _DEFAULT_AUTH_JSON.get("expiresAt", 0)
         remaining_days = (exp - int(time.time())) // 86400
-        print(f"✅ 使用代码内嵌 seed token (剩余 {remaining_days} 天)")
+        logger.info(f"✅ 使用代码内嵌 seed token (剩余 {remaining_days} 天)")
         return _DEFAULT_AUTH_JSON["accessToken"]
 
     # 路径 4: 兜底 —— 开浏览器抓
     if auth_json:
-        print("⚠️ .env.local 里的 token 已过期,启动浏览器重新获取...")
+        logger.warning("⚠️ .env.local 里的 token 已过期,启动浏览器重新获取...")
     else:
-        print("ℹ️ 无可用 token(.env.local 和内嵌 seed 均无效),启动浏览器获取...")
+        logger.info("ℹ️ 无可用 token(.env.local 和内嵌 seed 均无效),启动浏览器获取...")
 
     new_auth = _fetch_token_via_browser()
 
@@ -278,9 +282,9 @@ def get_dev_token():
     exp = new_auth.get("expiresAt", 0)
     if exp:
         exp_str = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(exp))
-        print(f"✅ 新 token 已保存到 .env.local (有效期至 {exp_str})")
+        logger.info(f"✅ 新 token 已保存到 .env.local (有效期至 {exp_str})")
     else:
-        print("✅ 新 token 已保存到 .env.local")
+        logger.info("✅ 新 token 已保存到 .env.local")
 
     return new_auth["accessToken"]
 

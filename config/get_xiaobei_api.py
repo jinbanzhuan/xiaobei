@@ -1,5 +1,9 @@
 import os
 
+from config.logger import get_logger
+
+logger = get_logger(__name__)
+
 # ============================================
 # 小北原生 open API 配置
 # 优先级: 环境变量 > .env.local > 本文件内嵌默认值(EXP 租户)
@@ -41,7 +45,7 @@ def get_env_value(key):
         # 没有 .env.local 是正常场景, 走内嵌默认值
         pass
     except Exception as e:
-        print(f"读取.env.local失败: {e}")
+        logger.error(f"读取.env.local失败: {e}")
 
     return _DEFAULTS.get(key, "")
 
