@@ -1,4 +1,3 @@
-cat > utils/send_feishu.py << 'EOF'
 #!/usr/bin/env python3
 import requests
 import json
@@ -8,7 +7,7 @@ import hmac
 import hashlib
 import base64
 
-# 飞书机器人的签名密钥，替换成你的
+# 飞书机器人的签名密钥，替换成你的（以 SEC 开头）
 SECRET = "sIiEZXEA1zvrk4NdcI0Hwe"
 
 def gen_sign(secret, timestamp):
@@ -69,4 +68,3 @@ if __name__ == "__main__":
         print("参数不足: webhook_url status job_name build_number build_url report_url")
         sys.exit(1)
     send_feishu_message(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5], sys.argv[6])
-EOF
