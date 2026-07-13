@@ -1,10 +1,30 @@
+cat > utils/send_feishu.py << 'EOF'
 #!/usr/bin/env python3
 import requests
 import json
 import sys
-import os
+import time
+import hmac
+import hashlib
+import base64
+
+# 飞书机器人的签名密钥，替换成你的
+SECRET = "sIiEZXEA1zvrk4NdcI0Hwe"
+
+def gen_sign(secret, timestamp):
+    """生成飞书签名"""
+    string_to_sign = f"{timestamp}\n{secret}"
+    hmac_code = hmac.new(
+        secret.encode('utf-8'),
+        string_to_sign.encode('utf-8'),
+        hashlib.sha256
+    ).digest()
+    return base64.b64encode(hmac_code).decode('utf-8')
 
 def send_feishu_message(webhook_url, status, job_name, build_number, build_url, report_url):
+    timestamp = str(int(time.time()))
+    sign = gen_sign(SECRET, timestamp)
+
     if status == "SUCCESS":
         title = "✅ 自动化测试通过"
         status_text = "通过 ✅"
@@ -13,6 +33,8 @@ def send_feishu_message(webhook_url, status, job_name, build_number, build_url, 
         status_text = "失败 ❌"
 
     content = {
+        "timestamp": timestamp,
+        "sign": sign,
         "msg_type": "post",
         "content": {
             "post": {
@@ -33,6 +55,8 @@ def send_feishu_message(webhook_url, status, job_name, build_number, build_url, 
     try:
         response = requests.post(webhook_url, json=content, timeout=10)
         result = response.json()
+        print(f"响应状态码: {response.status_code}")
+        print(f"响应内容: {result}")
         if result.get("code") == 0:
             print("✅ 飞书消息发送成功")
         else:
@@ -42,6 +66,7 @@ def send_feishu_message(webhook_url, status, job_name, build_number, build_url, 
 
 if __name__ == "__main__":
     if len(sys.argv) < 6:
-        print("参数不足")
+        print("参数不足: webhook_url status job_name build_number build_url report_url")
         sys.exit(1)
     send_feishu_message(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5], sys.argv[6])
+EOF
