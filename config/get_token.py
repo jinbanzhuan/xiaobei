@@ -178,14 +178,13 @@ def _fetch_token_via_browser():
         # 每 1 秒读一次, 每 5 秒 reload 一次 token_page 让 SPA 有机会重新拉 token
         # 用 Python 外层 while 而不是 page.wait_for_function, 因为跨 origin 跳转会
         # destroy execution context, wait_for_function 会挂死
-        import time as _time
-        deadline = _time.time() + LOGIN_TIMEOUT_MS / 1000
+        deadline = time.time() + LOGIN_TIMEOUT_MS / 1000
         auth_str = None
         last_login_url = ""
-        last_reload = _time.time()
+        last_reload = time.time()
         RELOAD_INTERVAL = 5
 
-        while _time.time() < deadline:
+        while time.time() < deadline:
             # 打印登录 tab 的 URL 变化, 方便用户看扫码进度
             try:
                 cur_url = login_page.url
@@ -208,14 +207,14 @@ def _fetch_token_via_browser():
 
             # 每 5 秒 reload 一次 token_page
             # 保证 SSO cookie 建立后, SPA 有机会重新拉 token 写 localStorage
-            if _time.time() - last_reload > RELOAD_INTERVAL:
+            if time.time() - last_reload > RELOAD_INTERVAL:
                 try:
                     token_page.goto(TOKEN_ORIGIN)
                 except Exception:
                     pass
-                last_reload = _time.time()
+                last_reload = time.time()
 
-            _time.sleep(1)
+            time.sleep(1)
 
         if not auth_str:
             ctx.close()
@@ -286,18 +285,8 @@ def get_dev_token():
     return new_auth["accessToken"]
 
 
-def get_headers():
-    """获取带 token 的请求头"""
-    return {
-        "accept-language": "zh-CN,zh;q=0.9",
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {get_dev_token()}",
-    }
-
-
 # ============================================
 # 兼容层:保持现有 `from config.get_token import token` 的写法
 # 模块首次 import 时执行一次
 # ============================================
-token = get_dev_token()
-TOKEN = token
+token = TOKEN = get_dev_token()

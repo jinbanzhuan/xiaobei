@@ -7,13 +7,16 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from config.api_client import base_url
 from config.get_token import token
+from config.logger import get_logger
 import urllib3
 
 urllib3.disable_warnings()
 
+
 class TestVisits:
+    login = get_logger()
     visit_id = []
-    enterprise_id=[]
+    enterprise_id = []
     headers = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {token}",
@@ -47,7 +50,7 @@ class TestVisits:
         self.visit_id.append(new_visits_response.json()['data']['id'])
 
         # 响应结果
-        print(f"\n新增走访成功:{new_visits_response.json()}")
+        self.logger.info(f"\n新增走访成功:{new_visits_response.json()}")
 
     @pytest.mark.隐藏走访
     def test_hidden_trues(self):
@@ -61,7 +64,7 @@ class TestVisits:
             hide_response = requests.post(url=hide_url, json=body, headers=self.headers, verify=False)
             assert hide_response.status_code == 200
             assert hide_response.json()['data']['hidden'] == True
-            print(f"\n隐藏走访成功:{hide_response.json()}")
+            self.logger.info(f"\n隐藏走访成功:{hide_response.json()}")
 
     @pytest.mark.显示走访
     def test_hidden_falses(self):
@@ -74,7 +77,7 @@ class TestVisits:
         hide_responses = requests.post(url=hide_url, json=body, headers=self.headers, verify=False)
         assert hide_responses.status_code == 200
         assert hide_responses.json()['data']['hidden'] == False
-        print(f"\n显示走访成功,返回值:{hide_responses.json()['data']['hidden']}")
+        self.logger.info(f"\n显示走访成功,返回值:{hide_responses.json()['data']['hidden']}")
 
     @pytest.mark.提交走访
     def test_submit_visits(self):
@@ -91,7 +94,7 @@ class TestVisits:
             },
             submit_response = requests.post(url=submit_url, json=body, headers=self.headers, verify=False)
             assert submit_response.status_code == 200
-            print(f"\n提交走访成功:{submit_response.json()}")
+            self.logger.info(f"\n提交走访成功:{submit_response.json()}")
 
     @pytest.mark.删除走访
     def test_del_visits(self):
@@ -105,12 +108,12 @@ class TestVisits:
             del_response = requests.delete(url=del_url, headers=self.headers, verify=False)
             if del_response.json()["code"] == 0:
                 assert del_response.status_code == 200
-                print(f"\n删除走访成功:{del_response.json()}")
+                self.logger.info(f"\n删除走访成功:{del_response.json()}")
             elif del_response.json()["code"] != 0:
                 assert del_response.json()["error"] == "走访记录不存在"
-                print(f"\n删除走访失败,走访记录不存在:{del_response.json()}")
+                self.logger.info(f"\n删除走访失败,走访记录不存在:{del_response.json()}")
             else:
-                print(f"\n未知错误:{del_response.json()}")
+                self.logger.info(f"\n未知错误:{del_response.json()}")
 
 
 if __name__ == "__main__":
