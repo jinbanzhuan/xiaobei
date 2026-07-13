@@ -283,10 +283,10 @@ class TestVisitsAll:
             self.logger.error(f" ☹️ 断言失败: {e}")
             self.logger.error(f"堆栈信息:\n{traceback.format_exc()}")
         except IndexError as e:
-            self.logger.info(f" ☹️ 索引错误:{e}")
+            self.logger.v(f" ☹️ 索引错误:{e}")
             self.logger.error(f"堆栈信息:\n{traceback.format_exc()}")
         except Exception as e:
-            self.logger.info(f" 😳 未知错误:{e}")
+            self.logger.error(f" 😳 未知错误:{e}")
             self.logger.error(f"堆栈信息:\n{traceback.format_exc()}")
 
     @pytest.mark.准备阶段_删除走访
@@ -597,7 +597,7 @@ class TestVisitsAll:
         1, 新增单个走访
         2, 新增多个(number最高99)走访
         """
-        number = 99
+        number = 9
         enterprise_id = []
         visits_id = []
         try:

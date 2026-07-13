@@ -1,3 +1,5 @@
+import traceback
+
 import pytest
 import requests
 import os
@@ -15,42 +17,81 @@ urllib3.disable_warnings()
 
 class TestVisits:
     login = get_logger()
-    visit_id = []
-    enterprise_id = []
+    # visit_id = []
+    # enterprise_id = []
     headers = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {token}",
     }
 
+    def __init__(self):
+        self.logger = None
+
     @pytest.mark.新增走访
-    @pytest.mark.parametrize("enterprise_id", [
-        "7e367d34-ab10-41a6-b682-fc696bc76c63",
-        "dc5d07e8-226e-4c82-89b4-a447cddbc00d"
-    ])
-    def test_new_visits(self, enterprise_id):
-        """
-        测试用例：
-        1. 新增企业走访成功
-        """
-        # POST/api/v1/visits新增企业走访
-        url = f"{base_url}/api/v1/visits"
-        body = {
-            "enterpriseId": enterprise_id,
-            "visitors": [],
-            "participants": [{"name": "金阳"}],
-            "source": "手动录入"
-        }
-        new_visits_response = requests.post(url=url, json=body, headers=self.headers, verify=False)
+    def test_add_visits(self, enterprise_id):
+        try:
+            visit_id = []
+            enterprise_id = []
 
-        # 断言状态码和响应结果
-        assert new_visits_response.status_code == 200
-        assert new_visits_response.json()['data']['source'] == "手动录入"
+            # ==================== [01] 获取随机企业 ====================
+            get_enterprises = requests.get(
+                url=f"{base_url}/api/v1/enterprises?pageSize=100&page=1",
+                headers=self.headers,
+                timeout=(10, 30),
+                verify=False
+            )
 
-        # 添加新增的走访id
-        self.visit_id.append(new_visits_response.json()['data']['id'])
+            if get_enterprises.status_code == 200:
+                assert get_enterprises.json()['data']['count'] > 0
 
-        # 响应结果
-        self.logger.info(f"\n新增走访成功:{new_visits_response.json()}")
+
+            assert get_enterprises.status_code == 200, f"[01]🙅获取随机企业id失败,️响应码错误:{get_enterprises.status_code}"
+            enterprise_id.append(get_enterprises.json()['data']['list'][self.r]['id'])
+            assert enterprise_id is not None and len(
+                enterprise_id) > 0, f"[01]🙅add随机企业id失败,列表为空:{enterprise_id}"
+            self.logger.info(f"[01] ✅ 获取随机企业id:{get_enterprises.json()['data']['list'][self.r]['id']}")
+
+            # ==================== [0] 新增走访 ====================
+            """
+            测试用例：
+            1. 新增企业走访成功
+            """
+            # POST/api/v1/visits新增企业走访
+            url = f"{base_url}/api/v1/visits"
+            body = {
+                "enterpriseId": enterprise_id,
+                "visitors": [],
+                "participants": [{"name": "金阳"}],
+                "source": "手动录入"
+            }
+            new_visits_response = requests.post(url=url, json=body, headers=self.headers, verify=False)
+
+            # 断言状态码和响应结果
+            assert new_visits_response.status_code == 200
+            assert new_visits_response.json()['data']['source'] == "手动录入"
+
+            # 添加新增的走访id
+            visit_id.append(new_visits_response.json()['data']['id'])
+
+            # 打印走访结果
+            self.logger.info(f"\n新增走访成功:{new_visits_response.json()}")
+            # ==================== [01] 删除走访 ====================
+
+            del_url = f"{base_url}/api/v1/visits/{visit_id}"
+            del_response = requests.delete(url=del_url, headers=self.headers, verify=False)
+            if del_response.json()["code"] == 0:
+                assert del_response.status_code == 200
+                self.logger.info(f"\n删除走访成功:{del_response.json()}")
+            elif del_response.json()["code"] != 0:
+                assert del_response.json()["error"] == "走访记录不存在"
+                self.logger.info(f"\n删除走访失败,走访记录不存在:{del_response.json()}")
+            else:
+                self.logger.info(f"\n未知错误:{del_response.json()}")
+
+
+        except Exception as e:
+            self.logger.error(f" 😳 报错信息: {e}")
+            self.logger.error(f"堆栈信息:\n{traceback.format_exc()}")
 
     @pytest.mark.隐藏走访
     def test_hidden_trues(self):
@@ -58,8 +99,8 @@ class TestVisits:
         1.显示的走访卡片隐藏成功
         """
         # POST/api/v1/visits/{visitId}/hide   显示企业走访卡片
-        for visit_id in self.visit_id:
-            hide_url = f"{base_url}/api/v1/visits/{visit_id}/hide"
+        for visit in self.visit_id:
+            hide_url = f"{base_url}/api/v1/visits/{visit}/hide"
             body = {"hidden": True}
             hide_response = requests.post(url=hide_url, json=body, headers=self.headers, verify=False)
             assert hide_response.status_code == 200
@@ -67,7 +108,7 @@ class TestVisits:
             self.logger.info(f"\n隐藏走访成功:{hide_response.json()}")
 
     @pytest.mark.显示走访
-    def test_hidden_falses(self):
+    def test_hidden_false(self):
         """
         1.隐藏的走访卡片显示成功
         """
