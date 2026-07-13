@@ -45,7 +45,7 @@ pipeline {
                 sh '''
                     . venv/bin/activate
                     python utils/send_feishu.py \
-                        "你的飞书Webhook地址" \
+                        "https://open.feishu.cn/open-apis/bot/v2/hook/e44589a8-9547-4710-97ee-d46246466160" \
                         "SUCCESS" \
                         "${env.JOB_NAME}" \
                         "${env.BUILD_NUMBER}" \
