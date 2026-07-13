@@ -42,7 +42,7 @@ pipeline {
             script {
                 echo "✅ 测试通过！报告地址: ${env.BUILD_URL}allure"
                 // 发送飞书通知
-                sh '''
+                sh """
                     . venv/bin/activate
                     python utils/send_feishu.py \
                         "https://open.feishu.cn/open-apis/bot/v2/hook/e44589a8-9547-4710-97ee-d46246466160" \
@@ -51,14 +51,14 @@ pipeline {
                         "${env.BUILD_NUMBER}" \
                         "${env.BUILD_URL}" \
                         "${env.BUILD_URL}allure"
-                '''
+                """
             }
         }
         failure {
             script {
                 echo "❌ 测试失败！请查看日志: ${env.BUILD_URL}console"
                 // 发送飞书通知
-                sh '''
+                sh """
                     . venv/bin/activate
                     python utils/send_feishu.py \
                         "https://open.feishu.cn/open-apis/bot/v2/hook/e44589a8-9547-4710-97ee-d46246466160" \
@@ -67,7 +67,7 @@ pipeline {
                         "${env.BUILD_NUMBER}" \
                         "${env.BUILD_URL}" \
                         "${env.BUILD_URL}allure"
-                '''
+                """
             }
         }
     }
