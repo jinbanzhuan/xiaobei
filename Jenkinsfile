@@ -12,8 +12,12 @@ pipeline {
                     # 激活虚拟环境并安装依赖
                     . venv/bin/activate
                     pip install --upgrade pip -q
-                    pip install -r requirements.txt -q || true
-                    pip install allure-pytest pytest-html pytest-sugar -q
+                    # 强制安装 requests 和 pytest
+                    pip install requests pytest allure-pytest pytest-html pytest-sugar -q
+                    # 如果有 requirements.txt 也安装
+                    if [ -f "requirements.txt" ]; then
+                        pip install -r requirements.txt -q || true
+                    fi
                 '''
             }
         }
@@ -24,6 +28,7 @@ pipeline {
                     # 激活虚拟环境运行测试
                     . venv/bin/activate
                     rm -rf ./allure-results
+                    # 将项目根目录添加到 Python 路径，解决 config 模块找不到的问题
                     PYTHONPATH=$PYTHONPATH:. pytest testcases/ --alluredir=./allure-results -v -p no:warnings
                 '''
             }
