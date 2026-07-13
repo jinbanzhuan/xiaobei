@@ -2,28 +2,8 @@
 import requests
 import json
 import sys
-import time
-import hmac
-import hashlib
-import base64
-
-# 飞书机器人的签名密钥，替换成你的（以 SEC 开头）
-SECRET = "sIiEZXEA1zvrk4NdcI0Hwe"
-
-def gen_sign(secret, timestamp):
-    """生成飞书签名"""
-    string_to_sign = f"{timestamp}\n{secret}"
-    hmac_code = hmac.new(
-        secret.encode('utf-8'),
-        string_to_sign.encode('utf-8'),
-        hashlib.sha256
-    ).digest()
-    return base64.b64encode(hmac_code).decode('utf-8')
 
 def send_feishu_message(webhook_url, status, job_name, build_number, build_url, report_url):
-    timestamp = str(int(time.time()))
-    sign = gen_sign(SECRET, timestamp)
-
     if status == "SUCCESS":
         title = "✅ 自动化测试通过"
         status_text = "通过 ✅"
@@ -32,8 +12,6 @@ def send_feishu_message(webhook_url, status, job_name, build_number, build_url, 
         status_text = "失败 ❌"
 
     content = {
-        "timestamp": timestamp,
-        "sign": sign,
         "msg_type": "post",
         "content": {
             "post": {
