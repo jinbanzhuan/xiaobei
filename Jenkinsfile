@@ -29,7 +29,7 @@ pipeline {
                     . venv/bin/activate
                     rm -rf ./allure-results
                     # 将项目根目录添加到 Python 路径，解决 config 模块找不到的问题
-                    PYTHONPATH=$PYTHONPATH:. pytest testcases/test_visits/ --alluredir=./allure-results -v -p no:warnings
+                    PYTHONPATH=$PYTHONPATH:. pytest testcases/test_visits/ --alluredir=./allure-results -s -v
                 '''
             }
         }
