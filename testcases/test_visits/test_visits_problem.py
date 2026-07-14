@@ -14,7 +14,7 @@ from utils.get_visits_data import get_csv_visits_data
 
 
 # 企业画像-待走访问题
-class TestQiYeHuaXiang:
+class TestVisitsProblem:
     logger = get_logger()
     visit_id = []
     del_visit_id = []

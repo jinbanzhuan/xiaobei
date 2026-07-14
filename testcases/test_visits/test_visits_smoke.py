@@ -26,7 +26,7 @@ from config.logger import get_logger
 7, 
 """
 
-class TestVisitsAll:
+class TestVisitsSmoke:
     logger = get_logger()
     r = random.randint(0, 99)
     # base_url = "https://dev-bo-api.xiaobei.top"

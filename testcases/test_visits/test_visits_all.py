@@ -26,7 +26,7 @@ from config.logger import get_logger
 7, 
 """
 
-class TestVisitsAll:
+class TestVisitsItem:
     logger = get_logger()
     r = random.randint(0, 99)
     # base_url = "https://dev-bo-api.xiaobei.top"
@@ -38,7 +38,7 @@ class TestVisitsAll:
     }
 
     @pytest.mark.新增背调事项
-    def test_add_background_check_items(self):
+    def test_add_background_check_item(self):
         """
         1, 新增单条背调事项
         2, 新增多条背调事项 -还未补充
@@ -143,7 +143,7 @@ class TestVisitsAll:
             self.logger.info(f"[06] ✅新增背调事项成功 🐮奶牛牛\n")
 
     @pytest.mark.新增多条背调事项
-    def test_add_multiple_background_check_items(self):
+    def test_add_multiple_background_check_item(self):
         """
         1, 新增 有效等价类
         2, 新增 新增字母组合
