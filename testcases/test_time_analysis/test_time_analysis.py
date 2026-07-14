@@ -34,14 +34,14 @@ class TestTimeAnalysis:
         1, 耗时分析
         """
 
-        for cycle in range(1, 6):
+        for cycle in range(1, 2):
 
             self.logger.info(f"========== 第 {cycle} 次 ♻️ 循环开始 ==========")
 
             item_id = []
             checklist_id = []
             enterprise_id = []
-            visits_id = []
+            visits_id = [].
             tasks_id = []
             start_time = time.time()
 
@@ -69,6 +69,8 @@ class TestTimeAnalysis:
                 assert enterprise_id is not None and len(
                     enterprise_id) > 0, f"\n[01] 🙅 add指定企业id失败,列表为空: {enterprise_id}"
                 self.logger.info(f"[01] ✅ 获取指定企业id成功: {target_enterprise_name} -> {enterprise_id}")
+
+
 
                 # ==================== [02]新增走访 ====================
                 add_visits = requests.post(

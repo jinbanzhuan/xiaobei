@@ -23,7 +23,7 @@ pipeline {
                 sh '''
                     . venv/bin/activate
                     rm -rf ./allure-results
-                    PYTHONPATH=$PYTHONPATH:. pytest testcases/test_chat_xiaobei testcases/test_time_analysis --alluredir=./allure-results -v
+                    PYTHONPATH=$PYTHONPATH:. pytest testcases/test_visits testcases/test_time_analysis --alluredir=./allure-results -v
                 '''
             }
         }

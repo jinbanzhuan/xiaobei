@@ -8,7 +8,7 @@ def send_feishu_message(webhook_url, status, job_name, build_number, build_url, 
         title = "✅ API自动化测试通过"
         status_text = "通过 ✅"
     else:
-        title = "❌ API自动化测试通过"
+        title = "❌ API自动化测试失败"
         status_text = "失败 ❌"
 
     content = {
