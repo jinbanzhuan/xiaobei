@@ -48,8 +48,7 @@ class TestQiYeHuaXiang:
         self.visit_id.append(new_visits_response.json()['data']['id'])
 
         # 打印实际值
-        source_value = new_visits_response.json()['data']['source']
-        self.logger.info(f"✅ 新增走访成功: {new_visits_response.json()}")
+        self.logger.info(f"✅新增走访成功: {new_visits_response.json()}\n")
 
     @pytest.mark.新增待走访问题
     @pytest.mark.parametrize("contents,sourceDepartments,sourcePersons", get_csv_visits_data())
@@ -78,18 +77,11 @@ class TestQiYeHuaXiang:
         visits_problem_response = requests.post(url=visits_problem_url, json=body, headers=self.headers, verify=False)
 
         # 断言状态码和响应结果
-        if visits_problem_response.status_code == 200:
+        assert visits_problem_response.status_code == 200
+        assert visits_problem_response.json()["data"] is not None
+        self.del_visit_id.append(visits_problem_response.json()['data']["item"]['id'])
+        self.logger.info(f"✅新增待走访问题成功: 第{len(self.del_visit_id)}次, {visits_problem_response.json()}")
 
-            assert visits_problem_response.json()["data"] is not None
-            self.del_visit_id.append(visits_problem_response.json()['data']["item"]['id'])
-
-            self.logger.info(f"✅ 新增待走访问题成功: 第{len(self.del_visit_id)}次, {visits_problem_response.json()}")
-
-        elif visits_problem_response.status_code != 200:
-            self.logger.error(f"❌ 状态码错误: {visits_problem_response}")
-
-        else:
-            self.logger.error(f"❌ 未知错误: {visits_problem_response}")
 
     @pytest.mark.修改待走访问题
     def test_update_visits_problem(self):
@@ -133,9 +125,8 @@ class TestQiYeHuaXiang:
 
             assert update_response.status_code == 200
 
-            self.update_visits_problem_comment_content.append(update_response.json()["data"]["item"]["content"])
-
-            self.logger.info(f"✅ 修改待走访问题成功: 第{i + 1}次 (ID: {update_visit}), {update_response.json()}")
+        self.update_visits_problem_comment_content.append(update_response.json()["data"]["item"]["content"])
+        self.logger.info(f"✅修改待走访问题成功: 第{i + 1}次 ID: {update_visit}, 响应:{update_response.json()}\n")
 
     @pytest.mark.更新答案
     def test_update_pending_question_answer(self):
@@ -155,8 +146,8 @@ class TestQiYeHuaXiang:
 
             assert update_resp.status_code == 200
 
-            self.logger.debug(f"content: {self.update_visits_problem_comment_content}")
-            self.logger.info(f"✅ 更新成功: {update_resp.json()}")
+        self.logger.debug(f"content: {self.update_visits_problem_comment_content}")
+        self.logger.info(f"✅更新成功, 最后一次返回值: {update_resp.json()}\n")
 
 
     @pytest.mark.删除待走访问题
@@ -185,8 +176,8 @@ class TestQiYeHuaXiang:
             # 断言状态码
             assert del_response.status_code == 200
 
-            # 打印实际值
-            self.logger.info(f"✅ 删除待走访问题成功: 第{len(count_list)}次, {del_response.json()}")
+        # 打印实际值
+        self.logger.info(f"✅删除 {len(count_list)} 次待走访问题成功, {del_response.json()}\n")
 
 
     @pytest.mark.删除走访
@@ -200,12 +191,12 @@ class TestQiYeHuaXiang:
             del_response = requests.delete(url=del_url, headers=self.headers, verify=False)
             if del_response.json()["code"] == 0:
                 assert del_response.status_code == 200
-                self.logger.info("✅ 删除走访成功")
+                self.logger.info("✅删除走访成功")
             elif del_response.json()["code"] != 0:
                 assert del_response.json()["error"] == "走访记录不存在"
                 self.logger.warning(f"⚠️ 删除走访失败,走访记录不存在: {del_response.json()}")
             else:
-                self.logger.error(f"❌ 未知错误: {del_response.json()}")
+                self.logger.error(f"❌ 未知错误: {del_response.json()}\n")
 
 
     if __name__ == "__main__":

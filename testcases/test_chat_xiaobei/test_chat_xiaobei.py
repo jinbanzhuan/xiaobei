@@ -87,7 +87,7 @@ class TestChat:
                 if msg.lower() in ("q", "quit", "exit"):
                     break
 
-                # ==================== [04] 查询分析结果 ====================
+                # ==================== [05] 查询分析结果 ====================
                 while True:
                     get_analysis = requests.get(
                         url=f"{base_url}/api/v1/tasks/{task_id}",
@@ -96,17 +96,17 @@ class TestChat:
                         verify=False
                     )
                     if get_analysis.json().get('data', {}).get('status') in ["", "pending", "processing"]:
-                        self.logger.info(f"[04] 👀 查询中...")
+                        self.logger.info(f"[05] 👀 查询中...")
                         time.sleep(2)
                     elif get_analysis.json().get('data', {}).get('status') in ["failed", "canceled"]:
-                        self.logger.error(f"[04] ☹️ 分析失败/任务取消: {get_analysis.json()}")
+                        self.logger.error(f"[05] ☹️ 分析失败/任务取消: {get_analysis.json()}")
                         break
                     elif get_analysis.json().get('data', {}).get('status') == "completed":
                         result = get_analysis.json().get('data', {}).get('result', '')
-                        self.logger.info(f"[04] 🤖 小北: {result}\n")
+                        self.logger.info(f"[05] 🤖 小北: {result}\n")
                         break
                     else:
-                        self.logger.error(f"[04] 🙅 未知状态: {get_analysis.json()}")
+                        self.logger.error(f"[05] 🙅 未知状态: {get_analysis.json()}")
 
         except Exception as e:
             self.logger.error(f"测试异常: {e}")

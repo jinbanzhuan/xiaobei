@@ -50,7 +50,7 @@ class TestDelVisits:
             enterprise_id.append(get_enterprises.json()['data']['list'][self.r]['id'])
             assert enterprise_id is not None and len(
                 enterprise_id) > 0, f"[01]🙅add随机企业id失败,列表为空:{enterprise_id}"
-            self.logger.info(f"[01] ✅ 获取随机企业id:{get_enterprises.json()['data']['list'][self.r]['id']}")
+            self.logger.info(f"[01]✅获取随机企业id:{get_enterprises.json()['data']['list'][self.r]['id']}")
 
             # ==================== [02]新增走访 ====================
             add_visits = requests.post(
@@ -69,7 +69,7 @@ class TestDelVisits:
             assert add_visits.json()['data']['enterpriseId'] == enterprise_id[
                 0], f"[02]🙅新增走访失败,企业id不一致,返回值enterpriseId:{add_visits.json()['data']['enterpriseId']},列表enterpriseId{enterprise_id[0]}"
             visits_id.append(add_visits.json()['data']['id'])
-            self.logger.info(f"[02] ✅ 新增走访:{add_visits.json()['data']['createdAt']}")
+            self.logger.info(f"[02]✅新增走访:{add_visits.json()['data']['createdAt']}")
 
             # ==================== [03]删除走访 ====================
             del_visits = requests.delete(
@@ -80,18 +80,12 @@ class TestDelVisits:
             )
             assert del_visits.status_code == 200, f"[03]🙅删除走访失败,️响应码错误:{del_visits.status_code}"
             assert del_visits.json()['code'] == 0, f"[03]🙅删除走访失败:{del_visits.json()}"
-
-        except AssertionError as e:
-            self.logger.error(f" ☹️ 断言失败: {e}")
-            self.logger.error(f"堆栈信息:\n{traceback.format_exc()}")
-        except IndexError as e:
-            self.logger.info(f" ☹️ 索引错误:{e}")
-            self.logger.error(f"堆栈信息:\n{traceback.format_exc()}")
+            self.logger.info(f"[03]✅准备阶段-删除走访成功:{del_visits.json()}\n")
+            
         except Exception as e:
             self.logger.info(f"错误信息:{e}")
-            self.logger.error(f"堆栈信息:\n{traceback.format_exc()}")
-        else:
-            self.logger.info(f"[03] ✅ 准备阶段-删除走访成功:{del_visits.json()}\n")
+            self.logger.error(f"堆栈信息:\n{traceback.format_exc()}\n")
+
 
     @pytest.mark.走访阶段_删除走访
     def test_del_visits_stage(self):
@@ -113,7 +107,7 @@ class TestDelVisits:
             enterprise_id.append(get_enterprises.json()['data']['list'][self.r]['id'])
             assert enterprise_id is not None and len(
                 enterprise_id) > 0, f"[01]🙅add随机企业id失败,列表为空:{enterprise_id}"
-            self.logger.info(f"[01] ✅ 获取随机企业id:{get_enterprises.json()['data']['list'][self.r]['id']}")
+            self.logger.info(f"[01]✅获取随机企业id:{get_enterprises.json()['data']['list'][self.r]['id']}")
 
             # ==================== [02]新增走访 ====================
             add_visits = requests.post(
@@ -132,7 +126,7 @@ class TestDelVisits:
             assert add_visits.json()['data']['enterpriseId'] == enterprise_id[
                 0], f"[02]🙅新增走访失败,企业id不一致,返回值enterpriseId:{add_visits.json()['data']['enterpriseId']},列表enterpriseId{enterprise_id}"
             visits_id.append(add_visits.json()['data']['id'])
-            self.logger.info(f"[02] ✅ 新增走访:{add_visits.json()['data']['createdAt']}")
+            self.logger.info(f"[02]✅新增走访:{add_visits.json()['data']['createdAt']}")
 
             # ==================== [03]扭转状态checklist ====================
             checklists = requests.put(
@@ -149,7 +143,7 @@ class TestDelVisits:
                        'status'] == "checklist", f"[03]🙅扭转状态checklist失败:{checklists.json()}"
             assert checklists.json()['data']['enterpriseId'] == enterprise_id[
                 0], f"[03]🙅企业id不一致,返回值enterpriseId:{checklists.json()['data']['enterpriseId']},列表enterpriseId{enterprise_id}"
-            self.logger.info(f"[03] ✅ 扭转状态为:{checklists.json()['data']['status']}")
+            self.logger.info(f"[03]✅扭转状态为:{checklists.json()['data']['status']}")
 
             # ==================== [04]扭转状态visitings ====================
             visitings = requests.put(
@@ -165,7 +159,7 @@ class TestDelVisits:
             assert visitings.json()['data']['status'] == "visiting", f"[04]🙅扭转状态checklist失败:{visitings.json()}"
             assert visitings.json()['data']['enterpriseId'] == enterprise_id[
                 0], f"[04]🙅企业id不一致,返回值enterpriseId:{visitings.json()['data']['enterpriseId']},列表enterpriseId{enterprise_id}"
-            self.logger.info(f"[04] ✅ 扭转状态为:{visitings.json()['data']['status']},跳转到 走访阶段")
+            self.logger.info(f"[04]✅扭转状态为:{visitings.json()['data']['status']},跳转到 走访阶段")
 
             # ==================== [05]删除走访 ====================
             del_visits = requests.delete(
@@ -176,18 +170,12 @@ class TestDelVisits:
             )
             assert del_visits.status_code == 200, f"[05]🙅删除走访失败,响应码错误:{del_visits.status_code}"
             assert del_visits.json()['code'] == 0, f"[05]🙅删除走访失败:{del_visits.json()}"
+            self.logger.info(f"[05]✅走访阶段-删除走访成功:{del_visits.json()}\n")
 
-        except AssertionError as e:
-            self.logger.error(f" ☹️ 断言失败: {e}")
-            self.logger.error(f"堆栈信息:\n{traceback.format_exc()}")
-        except IndexError as e:
-            self.logger.info(f" ☹️ 索引错误:{e}")
-            self.logger.error(f"堆栈信息:\n{traceback.format_exc()}")
         except Exception as e:
             self.logger.info(f"错误信息:{e}")
-            self.logger.error(f"堆栈信息:\n{traceback.format_exc()}")
-        else:
-            self.logger.info(f"[05] ✅ 走访阶段-删除走访成功:{del_visits.json()}\n")
+            self.logger.error(f"堆栈信息:\n{traceback.format_exc()}\n")
+            
 
     @pytest.mark.删除隐藏走访
     def test_del_hidden_visits(self):
@@ -208,7 +196,7 @@ class TestDelVisits:
             enterprise_id.append(get_enterprises.json()['data']['list'][self.r]['id'])
             assert enterprise_id is not None and len(
                 enterprise_id) > 0, f"[01]🙅add随机企业id失败,列表为空:{enterprise_id}"
-            self.logger.info(f"[01] ✅ 获取随机企业id:{get_enterprises.json()['data']['list'][self.r]['id']}")
+            self.logger.info(f"[01]✅获取随机企业id:{get_enterprises.json()['data']['list'][self.r]['id']}")
 
             # ==================== [02]新增走访 ====================
             add_visits = requests.post(
@@ -227,7 +215,7 @@ class TestDelVisits:
             assert add_visits.json()['data']['enterpriseId'] == enterprise_id[
                 0], f"[02]🙅企业id不一致,返回值enterpriseId:{add_visits.json()['data']['enterpriseId']},列表enterpriseId{enterprise_id[0]}"
             visits_id.append(add_visits.json()['data']['id'])
-            self.logger.info(f"[02] ✅ 新增走访:{add_visits.json()['data']['createdAt']}")
+            self.logger.info(f"[02]✅新增走访:{add_visits.json()['data']['createdAt']}")
 
             # ==================== [03]隐藏走访 ====================
             hide = requests.post(
@@ -239,7 +227,7 @@ class TestDelVisits:
             )
             assert hide.status_code == 200, f"[03]🙅隐藏走访失败,响应码错误:{hide.status_code}"
             assert hide.json()['data']['hidden'] == True, f"[03]🙅返回值不是True,实际返回值:{hide.json()}"
-            self.logger.info(f"[03] ✅ 隐藏走访成功:{hide.json()['data']['hidden']}")
+            self.logger.info(f"[03]✅隐藏走访成功:{hide.json()['data']['hidden']}")
 
             # ==================== [04]删除隐藏走访 ====================
             del_visits = requests.delete(
@@ -250,17 +238,17 @@ class TestDelVisits:
             )
             assert del_visits.status_code == 200, f"[04]🙅删除走访失败,响应码错误:{del_visits.status_code}"
             assert del_visits.json()['code'] == 0, f"[04]🙅删除走访失败:{del_visits.json()}"
-            self.logger.info(f"[04] ✅ 删除隐藏走访成功 🏆棒棒的～:{del_visits.json()}\n")
+            self.logger.info(f"[04]✅删除隐藏走访成功 🏆棒棒的～:{del_visits.json()}\n")
 
         except AssertionError as e:
             self.logger.error(f" ☹️ 断言失败: {e}")
-            self.logger.error(f"堆栈信息:\n{traceback.format_exc()}")
+            self.logger.error(f"堆栈信息:\n{traceback.format_exc()}\n")
         except IndexError as e:
             self.logger.info(f" ☹️ 索引错误:{e}")
-            self.logger.error(f"堆栈信息:\n{traceback.format_exc()}")
+            self.logger.error(f"堆栈信息:\n{traceback.format_exc()}\n")
         except Exception as e:
-            self.logger.info(f"错误信息:{e}")
-            self.logger.error(f"堆栈信息:\n{traceback.format_exc()}")
+            self.logger.info(f"错误信息:{e}\n")
+            self.logger.error(f"堆栈信息:\n{traceback.format_exc()}\n")
 
 
     if __name__ == "__main__":

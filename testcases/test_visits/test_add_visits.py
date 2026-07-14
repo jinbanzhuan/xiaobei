@@ -79,11 +79,11 @@ class TestAddVisits:
 
             # 打印走访结果
             # self.logger.info(f"[02]列表: {enterprise_id}")
-            self.logger.info(f"[02]✅新增走访成功:{new_visits_response.json()}")
+            self.logger.info(f"[02]✅新增走访成功:{new_visits_response.json()}\n")
 
         except Exception as e:
             self.logger.error(f"报错信息: {e}")
-            self.logger.error(f"堆栈信息:\n{traceback.format_exc()}")
+            self.logger.error(f"堆栈信息:\n{traceback.format_exc()}\n")
 
     @pytest.mark.新增number个走访
     def test_add_multiple_visits(self):
@@ -161,11 +161,11 @@ class TestAddVisits:
                     verify=False
                 )
                 assert del_visits.status_code == 200, f"[03]🙅删除走访失败,响应码错误:{del_visits.status_code}"
-                assert del_visits.json()['code'] == 0, f"[03]🙅删除走访失败:{del_visits.json()}"
+                assert del_visits.json()['code'] == 0, f"[03]🙅删除走访失败:{del_visits.json()}\n"
 
         except Exception as e:
             self.logger.info(f"报错信息:{e}")
-            self.logger.error(f"堆栈信息:\n{traceback.format_exc()}")
+            self.logger.error(f"堆栈信息:\n{traceback.format_exc()}\n")
 
     @pytest.mark.新增走访失败
     def test_add_visits_fail(self):
@@ -201,11 +201,11 @@ class TestAddVisits:
 
             # 打印走访结果
             # self.logger.info(f"[01]列表: {enterprise_id}")
-            self.logger.info(f"[01]✅新增走访失败:{add_visits_response.json()}")
+            self.logger.info(f"[01]✅新增走访失败:{add_visits_response.json()}\n")
 
         except Exception as e:
             self.logger.info(f"错误信息:{e}")
-            self.logger.error(f"堆栈信息:\n{traceback.format_exc()}")
+            self.logger.error(f"堆栈信息:\n{traceback.format_exc()}\n")
 
     @pytest.mark.隐藏走访
     def test_hidden_trues(self):
@@ -269,7 +269,7 @@ class TestAddVisits:
             # self.logger.info(f"[02]列表: {enterprise_id}")
             self.logger.info(f"[02]✅新增走访成功:{add_visits.json()}")
 
-            # ==================== [02] 隐藏走访 ====================
+            # ==================== [03] 隐藏走访 ====================
             hide_true = requests.post(
                 url=f"{base_url}/api/v1/visits/{visits_id[0]}/hide",
                 json={"hidden": True},
@@ -277,18 +277,18 @@ class TestAddVisits:
                 verify=False
             )
             # 断言状态码
-            assert hide_true.status_code == 200, f"[02]隐藏走访失败,状态码: {hide_true.status_code},响应: {hide_true.json()}"
+            assert hide_true.status_code == 200, f"[03]隐藏走访失败,状态码: {hide_true.status_code},响应: {hide_true.json()}"
 
             # 断言响应结果
-            assert hide_true.json()['code'] == 0, f"[02]隐藏走访失败:{hide_true.json()}"
-            assert hide_true.json()['data']['hidden'] == True, f"[02]隐藏走访hidden状态错误:{add_visits.json()}"
+            assert hide_true.json()['code'] == 0, f"[03]隐藏走访失败:{hide_true.json()}"
+            assert hide_true.json()['data']['hidden'] == True, f"[03]隐藏走访hidden状态错误:{add_visits.json()}"
 
             # 打印走访结果
-            self.logger.info(f"[02]✅隐藏走访成功:{hide_true.json()}")
+            self.logger.info(f"[03]✅隐藏走访成功:{hide_true.json()}\n")
 
         except Exception as e:
-            self.logger.error(f"报错信息: {e}")
-            self.logger.error(f"堆栈信息:\n{traceback.format_exc()}")
+            self.logger.error(f"报错信息:{e}")
+            self.logger.error(f"堆栈信息:\n{traceback.format_exc()}\n")
 
     @pytest.mark.隐藏number个走访
     def test_hidden_multiple_trues(self):
@@ -373,7 +373,7 @@ class TestAddVisits:
                 assert hide_true.json()['data']['hidden'] == True, f"[03]隐藏走访hidden状态错误:{add_visits.json()}"
 
             # 打印走访结果
-            self.logger.info(f"[03]✅隐藏 {len(visits_id)} 次走访成功:{hide_true.json()}")
+            self.logger.info(f"[03]✅隐藏 {len(visits_id)} 次走访成功:{hide_true.json()}\n")
 
             # ==================== [04]闭环 ====================
             for visits in visits_id:
@@ -387,8 +387,8 @@ class TestAddVisits:
                 assert del_visits.json()['code'] == 0, f"[04]删除走访失败:{del_visits.json()}"
 
         except Exception as e:
-            self.logger.info(f"报错信息:{e}")
-            self.logger.error(f"堆栈信息:\n{traceback.format_exc()}")
+            self.logger.info(f"报错信息:{e}\n")
+            self.logger.error(f"堆栈信息:\n{traceback.format_exc()}\n")
 
     @pytest.mark.显示走访
     def test_hidden_false(self):
@@ -452,7 +452,7 @@ class TestAddVisits:
             # self.logger.info(f"[02]列表: {enterprise_id}")
             self.logger.info(f"[02]✅新增走访成功:{add_visits.json()}")
 
-            # ==================== [02] 隐藏走访 ====================
+            # ==================== [03] 隐藏走访 ====================
             hide_true = requests.post(
                 url=f"{base_url}/api/v1/visits/{visits_id[0]}/hide",
                 json={"hidden": True},
@@ -467,9 +467,9 @@ class TestAddVisits:
             assert hide_true.json()['data']['hidden'] == True, f"[02]隐藏走访hidden状态错误:{add_visits.json()}"
 
             # 打印走访结果
-            self.logger.info(f"[02]✅隐藏走访成功:{hide_true.json()}")
+            self.logger.info(f"[03]✅隐藏走访成功:{hide_true.json()}")
 
-            # ==================== [03] 显示走访 ====================
+            # ==================== [04] 显示走访 ====================
             hide_false = requests.post(
                 url=f"{base_url}/api/v1/visits/{visits_id[0]}/hide",
                 json={"hidden": False},
@@ -478,18 +478,18 @@ class TestAddVisits:
             )
 
             # 断言状态码
-            assert hide_false.status_code == 200, f"[02]显示走访失败,状态码: {hide_false.status_code},响应: {hide_false.json()}"
+            assert hide_false.status_code == 200, f"[04]显示走访失败,状态码: {hide_false.status_code},响应: {hide_false.json()}"
 
             # 断言响应结果
-            assert hide_false.json()['code'] == 0, f"[02]显示走访失败:{hide_false.json()}"
-            assert hide_false.json()['data']['hidden'] == False, f"[02]显示走访hidden状态错误:{hide_false.json()}"
+            assert hide_false.json()['code'] == 0, f"[04]显示走访失败:{hide_false.json()}"
+            assert hide_false.json()['data']['hidden'] == False, f"[04]显示走访hidden状态错误:{hide_false.json()}"
 
             # 打印走访结果
-            self.logger.info(f"[02]✅显示走访成功:{hide_false.json()}")
+            self.logger.info(f"[04]✅显示走访成功:{hide_false.json()}\n")
 
         except Exception as e:
             self.logger.error(f"报错信息: {e}")
-            self.logger.error(f"堆栈信息:\n{traceback.format_exc()}")
+            self.logger.error(f"堆栈信息:\n{traceback.format_exc()}\n")
 
     @pytest.mark.显示number个走访
     def test_hidden_multiple_false(self):
@@ -593,7 +593,7 @@ class TestAddVisits:
                 assert hide_false.json()['data']['hidden'] == False, f"[04]显示走访hidden状态错误:{hide_false.json()}"
 
             # 打印走访结果
-            self.logger.info(f"[04]✅显示 {len(visits_id)} 次走访成功:{hide_false.json()}")
+            self.logger.info(f"[04]✅显示 {len(visits_id)} 次走访成功:{hide_false.json()}\n")
 
             # ==================== [05]闭环 ====================
             for visits in visits_id:
@@ -606,28 +606,10 @@ class TestAddVisits:
                 assert del_visits.status_code == 200, f"[05]删除走访失败,响应码错误:{del_visits.status_code}"
                 assert del_visits.json()['code'] == 0, f"[05]删除走访失败:{del_visits.json()}"
 
+
         except Exception as e:
-            self.logger.info(f"报错信息:{e}")
-            self.logger.error(f"堆栈信息:\n{traceback.format_exc()}")
-
-    # @pytest.mark.提交走访
-    # def test_submit_visits(self):
-    #     """
-    #     1.提交走访成功
-    #     """
-    #     # POST/api/v1/visits/{visitId}/submit
-    #     for i in range(len(self.enterprise_id)):
-    #         submit_url = f"{base_url}/api/v1/visits/{self.visit_id[1]}/submit"
-    #         body = {
-    #             "enterpriseId": self.enterprise_id[i],
-    #             "meetingTime": "2026-06-10T15:00:00Z",
-    #             "attendees": ["金阳"],
-    #         },
-    #         submit_response = requests.post(url=submit_url, json=body, headers=self.headers, verify=False)
-    #         assert submit_response.status_code == 200
-    #         self.logger.info(f"\n提交走访成功:{submit_response.json()}")
-
-
+            self.logger.info(f"报错信息:{e}\n")
+            self.logger.error(f"堆栈信息:\n{traceback.format_exc()}\n")
 
     @pytest.mark.删除走访兜底
     def test_del(self):
@@ -658,9 +640,8 @@ class TestAddVisits:
                     assert del_visits.json()['code'] == 0, f"[06]🙅删除走访失败:{del_visits.json()}"
                     self.logger.info(f"已经删除 {number} 条: {del_visits.json()}")
                 if task_id_list is not None:
-                    self.logger.info(f"删除兜底，准备阶段已经没有公司了")
+                    self.logger.info(f"删除兜底，准备阶段已经没有公司了\n")
                     break
-
 
         except Exception as e:
             self.logger.error(f"测试异常: {e}")
