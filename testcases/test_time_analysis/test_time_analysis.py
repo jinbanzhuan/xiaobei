@@ -1,5 +1,5 @@
 import traceback
-# import random
+import random
 import time
 import pytest
 import requests
@@ -10,7 +10,7 @@ from config.logger import get_logger
 
 
 class TestTimeAnalysis:
-    # r = random.randint(0, 99)
+
     # base_url = "https://dev-bo-api.xiaobei.top"
     # base_url = "http://localhost:12888/"
     logger = get_logger()
@@ -38,37 +38,58 @@ class TestTimeAnalysis:
 
             self.logger.info(f"========== 第 {cycle} 次 ♻️ 循环开始 ==========")
 
-            item_id = []
-            checklist_id = []
-            enterprise_id = []
-            visits_id = []
-            tasks_id = []
-            start_time = time.time()
-
-
             try:
-                # ==================== [01]获取指定企业id 存入enterprise_id ====================
-                target_enterprise_name = "上海米哈游网络科技股份有限公司"
+                item_id = []
+                checklist_id = []
+                enterprise_id = []
+                visits_id = []
+                tasks_id = []
+                start_time = time.time()
 
+                # ==================== [01] 获取随机企业 ====================
+                r = random.randint(0, 99)
                 get_enterprises = requests.get(
-                    url=f"{base_url}/api/v1/enterprises?pageSize=1000&page=1",
+                    url=f"{base_url}/api/v1/enterprises?pageSize=100&page=1",
                     headers=self.headers,
-                    timeout=(5, 30),
+                    timeout=(10, 30),
                     verify=False
                 )
-                assert get_enterprises.status_code == 200, f"\n[01] 🙅 获取企业列表失败,响应码错误: {get_enterprises.status_code}"
+                # 断言状态码和code为0
+                assert get_enterprises.status_code == 200, f"[01]查询企业id失败,状态码:{get_enterprises.status_code},响应:{get_enterprises.json()}"
+                assert get_enterprises.json()['code'] == 0, f"[01]查询企业失败:{get_enterprises.json()}"
 
-                enterprises_list = get_enterprises.json()['data']['list']
-                matched = next(
-                    (e for e in enterprises_list if e.get('name') == target_enterprise_name),
-                    None
-                )
-                assert matched is not None, f"\n[01] 🙅 未在企业列表中找到目标企业: {target_enterprise_name}"
+                # append 企业id到enterprise_id列表
+                enterprise_id.append(get_enterprises.json()['data']['list'][r]['id'])
 
-                enterprise_id.append(matched['id'])
+                # 断言是否添加成功, 列表元素是否为空
                 assert enterprise_id is not None and len(
-                    enterprise_id) > 0, f"\n[01] 🙅 add指定企业id失败,列表为空: {enterprise_id}"
-                self.logger.info(f"[01] ✅ 获取指定企业id成功: {target_enterprise_name} -> {enterprise_id}")
+                    enterprise_id) > 0, f"[01]新增企业id失败,列表为空:{enterprise_id}"
+
+                # 结果打印日志
+                self.logger.info(f"[01]✅获取随机企业id: {get_enterprises.json()['data']['list'][r]['id']}")
+
+                # # ==================== [01]获取指定企业id 存入enterprise_id ====================
+                # target_enterprise_name = "上海米哈游网络科技股份有限公司"
+                #
+                # get_enterprises = requests.get(
+                #     url=f"{base_url}/api/v1/enterprises?pageSize=1000&page=1",
+                #     headers=self.headers,
+                #     timeout=(5, 30),
+                #     verify=False
+                # )
+                # assert get_enterprises.status_code == 200, f"\n[01] 🙅 获取企业列表失败,响应码错误: {get_enterprises.status_code}"
+                #
+                # enterprises_list = get_enterprises.json()['data']['list']
+                # matched = next(
+                #     (e for e in enterprises_list if e.get('name') == target_enterprise_name),
+                #     None
+                # )
+                # assert matched is not None, f"\n[01] 🙅 未在企业列表中找到目标企业: {target_enterprise_name}"
+                #
+                # enterprise_id.append(matched['id'])
+                # assert enterprise_id is not None and len(
+                #     enterprise_id) > 0, f"\n[01] 🙅 add指定企业id失败,列表为空: {enterprise_id}"
+                # self.logger.info(f"[01] ✅ 获取指定企业id成功: {target_enterprise_name} -> {enterprise_id}")
 
 
 
