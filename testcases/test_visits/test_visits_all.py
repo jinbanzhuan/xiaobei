@@ -15,6 +15,16 @@ urllib3.disable_warnings()
 from utils.get_visits_item_data import get_csv_visits_item_data
 from config.logger import get_logger
 
+"""
+测试case:
+1, 新增背调事项
+2, 新增多条背调事项
+3, 
+4, 
+5, 
+6, 
+7, 
+"""
 
 class TestVisitsAll:
     logger = get_logger()
@@ -26,8 +36,6 @@ class TestVisitsAll:
         "Content-Type": "application/json",
         "Authorization": f"Bearer {token}",
     }
-
-
 
     @pytest.mark.新增背调事项
     def test_add_background_check_items(self):
@@ -252,6 +260,7 @@ class TestVisitsAll:
         else:
             self.logger.info(f"[06]  ✅ 新增背调事项成功, 🐮 奶牛牛 点赞  👍\n")
 
+    @pytest.mark.兜底
     def test_beta(self):
         try:
             while True:
@@ -288,7 +297,5 @@ class TestVisitsAll:
             self.logger.error(f"堆栈信息: \n{traceback.format_exc()} \n")
             raise
 
-
     if __name__ == "__main__":
         pytest.main([__file__, "-v", "-s"])
-        

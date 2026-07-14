@@ -14,6 +14,16 @@ import urllib3
 
 urllib3.disable_warnings()
 
+"""
+测试case:
+1, 新增走访
+2, 新增number个走访
+3, 新增错误走访
+4, 新增隐藏走访
+5, 新增隐藏number个走访
+6, 新增显示走访
+7, 新增显示number个走访
+"""
 
 class TestAddVisits:
     logger = get_logger()
@@ -167,7 +177,7 @@ class TestAddVisits:
             self.logger.info(f"报错信息:{e}")
             self.logger.error(f"堆栈信息:\n{traceback.format_exc()}\n")
 
-    @pytest.mark.新增走访失败
+    @pytest.mark.新增错误走访
     def test_add_visits_fail(self):
         """
         测试步骤:
@@ -207,7 +217,7 @@ class TestAddVisits:
             self.logger.info(f"错误信息:{e}")
             self.logger.error(f"堆栈信息:\n{traceback.format_exc()}\n")
 
-    @pytest.mark.隐藏走访
+    @pytest.mark.新增隐藏走访
     def test_hidden_trues(self):
         """
         测试步骤:
@@ -273,7 +283,7 @@ class TestAddVisits:
             hide_true = requests.post(
                 url=f"{base_url}/api/v1/visits/{visits_id[0]}/hide",
                 json={"hidden": True},
-                headers=self.headers, 
+                headers=self.headers,
                 verify=False
             )
             # 断言状态码
@@ -290,7 +300,7 @@ class TestAddVisits:
             self.logger.error(f"报错信息:{e}")
             self.logger.error(f"堆栈信息:\n{traceback.format_exc()}\n")
 
-    @pytest.mark.隐藏number个走访
+    @pytest.mark.新增隐藏number个走访
     def test_hidden_multiple_trues(self):
         """
         测试步骤:
@@ -390,7 +400,7 @@ class TestAddVisits:
             self.logger.info(f"报错信息:{e}\n")
             self.logger.error(f"堆栈信息:\n{traceback.format_exc()}\n")
 
-    @pytest.mark.显示走访
+    @pytest.mark.新增显示走访
     def test_hidden_false(self):
         """
                 测试步骤:
@@ -491,7 +501,7 @@ class TestAddVisits:
             self.logger.error(f"报错信息: {e}")
             self.logger.error(f"堆栈信息:\n{traceback.format_exc()}\n")
 
-    @pytest.mark.显示number个走访
+    @pytest.mark.新增显示number个走访
     def test_hidden_multiple_false(self):
         """
             测试步骤:
@@ -647,7 +657,6 @@ class TestAddVisits:
             self.logger.error(f"测试异常: {e}")
             self.logger.error(f"堆栈信息: \n{traceback.format_exc()} \n")
             raise
-
 
     if __name__ == "__main__":
         pytest.main([__file__, "-v", "-s"])

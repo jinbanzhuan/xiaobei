@@ -14,10 +14,16 @@ import urllib3
 
 urllib3.disable_warnings()
 
-
-
-
-
+"""
+测试case:
+1, 准备阶段_删除走访
+2, 走访阶段_删除走访
+3, 隐藏走访_删除走访
+4, 
+5, 
+6, 
+7, 
+"""
 
 class TestDelVisits:
     logger = get_logger()
@@ -81,11 +87,10 @@ class TestDelVisits:
             assert del_visits.status_code == 200, f"[03]🙅删除走访失败,️响应码错误:{del_visits.status_code}"
             assert del_visits.json()['code'] == 0, f"[03]🙅删除走访失败:{del_visits.json()}"
             self.logger.info(f"[03]✅准备阶段-删除走访成功:{del_visits.json()}\n")
-            
+
         except Exception as e:
             self.logger.info(f"错误信息:{e}")
             self.logger.error(f"堆栈信息:\n{traceback.format_exc()}\n")
-
 
     @pytest.mark.走访阶段_删除走访
     def test_del_visits_stage(self):
@@ -175,9 +180,8 @@ class TestDelVisits:
         except Exception as e:
             self.logger.info(f"错误信息:{e}")
             self.logger.error(f"堆栈信息:\n{traceback.format_exc()}\n")
-            
 
-    @pytest.mark.删除隐藏走访
+    @pytest.mark.隐藏走访_删除走访
     def test_del_hidden_visits(self):
         """
         1, 删除隐藏走访
@@ -249,7 +253,6 @@ class TestDelVisits:
         except Exception as e:
             self.logger.info(f"错误信息:{e}\n")
             self.logger.error(f"堆栈信息:\n{traceback.format_exc()}\n")
-
 
     if __name__ == "__main__":
         pytest.main([__file__, "-v", "-s"])

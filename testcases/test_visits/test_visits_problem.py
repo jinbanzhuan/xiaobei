@@ -82,7 +82,6 @@ class TestQiYeHuaXiang:
         self.del_visit_id.append(visits_problem_response.json()['data']["item"]['id'])
         self.logger.info(f"✅新增待走访问题成功: 第{len(self.del_visit_id)}次, {visits_problem_response.json()}")
 
-
     @pytest.mark.修改待走访问题
     def test_update_visits_problem(self):
         """
@@ -149,7 +148,6 @@ class TestQiYeHuaXiang:
         self.logger.debug(f"content: {self.update_visits_problem_comment_content}")
         self.logger.info(f"✅更新成功, 最后一次返回值: {update_resp.json()}\n")
 
-
     @pytest.mark.删除待走访问题
     def test_del_visits_problem(self):
         """
@@ -179,7 +177,6 @@ class TestQiYeHuaXiang:
         # 打印实际值
         self.logger.info(f"✅删除 {len(count_list)} 次待走访问题成功, {del_response.json()}\n")
 
-
     @pytest.mark.删除走访
     def test_del_visits(self):
         """
@@ -197,7 +194,6 @@ class TestQiYeHuaXiang:
                 self.logger.warning(f"⚠️ 删除走访失败,走访记录不存在: {del_response.json()}")
             else:
                 self.logger.error(f"❌ 未知错误: {del_response.json()}\n")
-
 
     if __name__ == "__main__":
         pytest.main([__file__, "-v", "-s"])

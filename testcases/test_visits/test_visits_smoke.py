@@ -15,6 +15,16 @@ urllib3.disable_warnings()
 
 from config.logger import get_logger
 
+"""
+测试case:
+1, 整个走访smoke case
+2, 
+3, 
+4, 
+5, 
+6, 
+7, 
+"""
 
 class TestVisitsAll:
     logger = get_logger()
