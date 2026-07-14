@@ -647,45 +647,42 @@ class TestVisitsAll:
         else:
             self.logger.info(f"[06]  ✅  新增背调事项成功, 🐮 奶牛牛 点赞  👍")
 
-    # def test_beta(self):
-    #
-    #     """
-    #     1, 新增走访失败case
-    #     """
-    #     try:
-    #         enterprise_id = ["910c4f2d-5734-4d54-8cb9-8c3c64b66d13"]
-    #
-    #         # ==================== [01] 新增走访 ====================
-    #         # POST/api/v1/visits新增企业走访
-    #         add_visits_response = requests.post(
-    #             url=f"{base_url}/api/v1/visits",
-    #             json={
-    #                 "enterpriseId": enterprise_id[0],  # str: 企业id
-    #                 "visitors": ["金阳"],  # list[str]: 走访人
-    #                 "participants": [{"name": "金阳"}],  # list[dict]: 参会人
-    #                 "source": "手动录入"  # str: 来源
-    #             },
-    #             headers=self.headers,
-    #             verify=False
-    #         )
-    #
-    #         # # 断言状态码
-    #         # assert add_visits_response.status_code == 200, f"[02]新增走访失败,状态码: {add_visits_response.status_code},响应: {add_visits_response.json()}"
-    #         #
-    #         # # 断言响应结果
-    #         # assert add_visits_response.json()['code'] == 0, f"[02]新增走访业务失败:{add_visits_response.json()}"
-    #         # assert add_visits_response.json()['data'][
-    #         #            'source'] == "手动录入", f"[02]手动录入失败:{add_visits_response.json()}"
-    #         # assert add_visits_response.json()['data']['enterpriseId'] == enterprise_id[
-    #         #     0], f"[02]企业id不一致, list元素为: {enterprise_id},响应: {add_visits_response.json()['data']['enterprise_id']}"
-    #
-    #         # 打印走访结果
-    #         # self.logger.info(f"[02]列表: {enterprise_id}")
-    #         self.logger.info(f"[02]✅新增走访成功:{add_visits_response.json()}")
-    #
-    #     except Exception as e:
-    #         self.logger.info(f"错误信息:{e}")
-    #         self.logger.error(f"堆栈信息:\n{traceback.format_exc()}")
+    def test_beta(self):
+        try:
+            while True:
+                # ==================== [01]查询页面已经创建的企业 ====================
+                get_page = requests.get(
+                    url=f"{base_url}/api/v1/visit-workbench/preparation-tasks?page=1&pageSize=60",
+                    headers=self.headers,
+                    timeout=(10, 30),
+                    verify=False,
+                )
+                assert get_page.status_code == 200, f"\n🙅 获取分页失败,响应码错误: {get_page.status_code}"
+                task_id_list = [item['id'] for item in get_page.json()['items']]
+                self.logger.info(f"✅ 共获取 {len(task_id_list)} 个 id: {task_id_list}")
+
+                # ==================== [02]删除已经查到的公司 ====================
+                number = 0
+                for visits_id in task_id_list:
+                    number += 1
+                    del_visits = requests.delete(
+                        url=f"{base_url}/api/v1/visits/{visits_id}",
+                        headers=self.headers,
+                        timeout=(10, 30),
+                        verify=False
+                    )
+                    assert del_visits.status_code == 200, f"[06]🙅删除走访失败,响应码错误:{del_visits.status_code}"
+                    assert del_visits.json()['code'] == 0, f"[06]🙅删除走访失败:{del_visits.json()}"
+                    self.logger.info(f"已经删除 {number} 条: {del_visits.json()}")
+                if task_id_list is not None:
+                    self.logger.info(f"删除兜底，准备阶段已经没有公司了")
+                    break
+
+
+        except Exception as e:
+            self.logger.error(f"测试异常: {e}")
+            self.logger.error(f"堆栈信息: \n{traceback.format_exc()} \n")
+            raise
 
 
     if __name__ == "__main__":

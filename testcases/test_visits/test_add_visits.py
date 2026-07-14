@@ -658,7 +658,7 @@ class TestAddVisits:
                     assert del_visits.json()['code'] == 0, f"[06]🙅删除走访失败:{del_visits.json()}"
                     self.logger.info(f"已经删除 {number} 条: {del_visits.json()}")
                 if task_id_list is not None:
-                    self.logger.info(f"删除兜底，已经没有公司了")
+                    self.logger.info(f"删除兜底，准备阶段已经没有公司了")
                     break
 
 
