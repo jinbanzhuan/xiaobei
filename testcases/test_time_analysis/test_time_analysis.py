@@ -41,7 +41,7 @@ class TestTimeAnalysis:
             item_id = []
             checklist_id = []
             enterprise_id = []
-            visits_id = [].
+            visits_id = []
             tasks_id = []
             start_time = time.time()
 
