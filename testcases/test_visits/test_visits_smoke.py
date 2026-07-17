@@ -3,27 +3,22 @@ import requests
 import random
 import traceback
 import time
-import os
-import sys
-
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from config.get_token import token
-from config.api_client import base_url
 import urllib3
 
 urllib3.disable_warnings()
-
+from config.get_token import token
+from config.api_client import base_url
 from config.logger import get_logger
 
 """
 测试case:
-1, 整个走访smoke case
-2, 
-3, 
-4, 
-5, 
-6, 
-7, 
+01, 整个走访smoke case
+02, 
+03, 
+04, 
+05, 
+06, 
+07, 
 """
 
 class TestVisitsSmoke:
@@ -37,7 +32,7 @@ class TestVisitsSmoke:
         "Authorization": f"Bearer {token}",
     }
 
-    @pytest.mark.走访smoke
+    @pytest.mark.smoke
     def test_visits_smoke(self):
         visits_id = []
         enterprise_id = []
@@ -76,7 +71,7 @@ class TestVisitsSmoke:
             visits_id.append(add_visits.json()['data']['id'])
             self.logger.info(f"[02]✅新增走访:{add_visits.json()}")
 
-            # ==================== [03]扭转状态checklist ====================
+            # ==================== [03]扭转状态 checklist ====================
             checklists = requests.put(
                 url=f"{base_url}/api/v1/visits/{visits_id[0]}",
                 json={
@@ -93,7 +88,7 @@ class TestVisitsSmoke:
                 0], f"[03]🙅企业id不一致,返回值enterpriseId:{checklists.json()['data']['enterpriseId']},列表enterpriseId:{enterprise_id[0]}"
             self.logger.info(f"[03]✅准备阶段-沟通清单:{checklists.json()}")
 
-            # ==================== [04]扭转状态visiting ====================
+            # ==================== [04]扭转状态 visiting ====================
             visitings = requests.put(
                 url=f"{base_url}/api/v1/visits/{visits_id[0]}",
                 json={
@@ -111,7 +106,7 @@ class TestVisitsSmoke:
                 0], f"[04]🙅企业id不一致,返回值enterpriseId:{visitings.json()['data']['enterpriseId']},列表enterpriseId:{enterprise_id[0]}"
             self.logger.info(f"[04]✅准备阶段-走访中: {visitings.json()}")
 
-            # ==================== [05]扭转状态confirmed ====================
+            # ==================== [05]扭转状态 confirmed ====================
             confirmed = requests.put(
                 url=f"{base_url}/api/v1/visits/{visits_id[0]}",
                 json={
@@ -264,7 +259,7 @@ class TestVisitsSmoke:
                 0], f"[12]🙅提交走访visitId错误,返回值:{add_submit.json()['data']['visitId']},列表visitId:{visits_id[0]}"
             self.logger.info(f"[12]✅提交走访成功:{add_submit.json()}")
 
-            # ===================== [13]扭转状态submitted ====================
+            # ===================== [13]扭转状态 submitted ====================
             commit_visits = requests.put(
                 url=f"{base_url}/api/v1/visits/{visits_id[0]}",
                 json={"status": "submitted"},

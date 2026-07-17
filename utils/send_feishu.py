@@ -18,9 +18,9 @@ def send_feishu_message(webhook_url, status, job_name, build_number, build_url, 
                 "zh_cn": {
                     "title": title,
                     "content": [
-                        [{"tag": "text", "text": f"📋 项目：{job_name}"}],
-                        [{"tag": "text", "text": f"🔢 构建编号：#{build_number}"}],
-                        [{"tag": "text", "text": f"📊 状态：{status_text}"}],
+                        [{"tag": "text", "text": f"📋 项目:{job_name}"}],
+                        [{"tag": "text", "text": f"🔢 构建编号:#{build_number}"}],
+                        [{"tag": "text", "text": f"📊 状态:{status_text}"}],
                         [{"tag": "a", "text": "📈 查看 Allure 报告", "href": report_url}],
                         [{"tag": "a", "text": "📝 查看控制台日志", "href": f"{build_url}console"}]
                     ]

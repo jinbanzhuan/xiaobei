@@ -3,28 +3,27 @@ import requests
 import random
 import traceback
 import time
-# import os
-# import sys
-#
-# sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from config.get_token import token
-from config.api_client import base_url
 import urllib3
 
 urllib3.disable_warnings()
 from utils.get_visits_item_data import get_csv_visits_item_data
 from config.logger import get_logger
+from config.get_token import token
+from config.api_client import base_url
+
+
 
 """
 测试case:
-1, 新增背调事项
-2, 新增多条背调事项
-3, 
-4, 
-5, 
-6, 
-7, 
+01, 新增 背调事项
+02, 新增 number条背调事项
+03, 
+04, 
+05, 
+06, 
+07, 
 """
+
 
 class TestVisitsItem:
     logger = get_logger()
@@ -258,44 +257,7 @@ class TestVisitsItem:
             self.logger.info(f" 😳 未知错误:{e}")
             self.logger.error(f"堆栈信息:\n{traceback.format_exc()}\n")
         else:
-            self.logger.info(f"[06]  ✅ 新增背调事项成功, 🐮 奶牛牛 点赞  👍\n")
-
-    @pytest.mark.兜底
-    def test_beta(self):
-        try:
-            while True:
-                # ==================== [01]查询页面已经创建的企业 ====================
-                get_page = requests.get(
-                    url=f"{base_url}/api/v1/visit-workbench/preparation-tasks?page=1&pageSize=60",
-                    headers=self.headers,
-                    timeout=(10, 30),
-                    verify=False,
-                )
-                assert get_page.status_code == 200, f"\n🙅 获取分页失败,响应码错误: {get_page.status_code}"
-                task_id_list = [item['id'] for item in get_page.json()['items']]
-                self.logger.info(f"✅共获取 {len(task_id_list)} 个 id: {task_id_list}")
-
-                # ==================== [02]删除已经查到的公司 ====================
-                number = 0
-                for visits_id in task_id_list:
-                    number += 1
-                    del_visits = requests.delete(
-                        url=f"{base_url}/api/v1/visits/{visits_id}",
-                        headers=self.headers,
-                        timeout=(10, 30),
-                        verify=False
-                    )
-                    assert del_visits.status_code == 200, f"[06]🙅删除走访失败,响应码错误:{del_visits.status_code}"
-                    assert del_visits.json()['code'] == 0, f"[06]🙅删除走访失败:{del_visits.json()}"
-                    self.logger.info(f"已经删除 {number} 条: {del_visits.json()}")
-                if task_id_list is not None:
-                    self.logger.info(f"删除兜底，准备阶段已经没有公司了\n")
-                    break
-
-        except Exception as e:
-            self.logger.error(f"测试异常: {e}")
-            self.logger.error(f"堆栈信息: \n{traceback.format_exc()} \n")
-            raise
+            self.logger.info(f"[06] ✅新增背调事项成功, 🐮 奶牛牛 点赞  👍\n")
 
     if __name__ == "__main__":
         pytest.main([__file__, "-v", "-s"])

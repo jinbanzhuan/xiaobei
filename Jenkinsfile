@@ -23,7 +23,7 @@ pipeline {
                 sh '''
                     . venv/bin/activate
                     rm -rf ./allure-results
-                    PYTHONPATH=$PYTHONPATH:. pytest testcases/test_visits testcases/test_time_analysis --alluredir=./allure-results -v
+                    PYTHONPATH=$PYTHONPATH:. pytest testcases/test_visits testcases/test_time_analysis --allure dir=./allure-results -v
                 '''
             }
         }
@@ -40,7 +40,7 @@ pipeline {
     post {
         success {
             script {
-                echo "✅ 测试通过！报告地址: ${env.BUILD_URL}allure"
+                echo "✅测试通过！报告地址: ${env.BUILD_URL}allure"
                 // 发送飞书通知
                 sh """
                     . venv/bin/activate

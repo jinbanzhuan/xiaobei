@@ -12,7 +12,16 @@ from config.get_token import token
 from config.logger import get_logger
 from utils.get_visits_data import get_csv_visits_data
 
-
+"""
+测试case:
+01, 新增 待走访问题
+02, 修改 待走访问题
+03, 更新 答案
+04, 
+05, 
+06, 
+07, 
+"""
 # 企业画像-待走访问题
 class TestVisitsProblem:
     logger = get_logger()
@@ -54,15 +63,15 @@ class TestVisitsProblem:
     @pytest.mark.parametrize("contents,sourceDepartments,sourcePersons", get_csv_visits_data())
     def test_visits_problem(self, contents, sourceDepartments, sourcePersons):
         """
-        1.新增 多个待走访问题
-        2.新增 纯数字
-        3.新增 数字组合
-        4.新增 纯字母
-        5.新增 字母组合
-        6.新增 特殊字符
-        7.新增 特殊字符组合
-        8.新增 所有字符组合
-        9.新增 纯空格
+        01.新增 多个待走访问题
+        02.新增 纯数字
+        03.新增 数字组合
+        04.新增 纯字母
+        05.新增 字母组合
+        06.新增 特殊字符
+        07.新增 特殊字符组合
+        08.新增 所有字符组合
+        09.新增 纯空格
         10.新增 空格组合
         11.新增 40个字符（最长40）
         12.新增 41个字符
