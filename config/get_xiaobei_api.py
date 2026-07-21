@@ -1,33 +1,16 @@
 import os
 
-from config.logger import get_logger
+from utils.logger import get_logger
 
 logger = get_logger(__name__)
 
-# ============================================
-# 小北原生 open API 配置
-# 优先级: 环境变量 > .env.local > 本文件内嵌默认值(EXP 租户)
-# 内嵌默认值保证 git clone 后无 .env.local 也能跑
-# 如果要切 dev/chj 租户, 在 .env.local 里覆盖对应 EXP_NORTH_APP_* 即可
-# ============================================
+# 强制 .env.local 提供 EXP_NORTH_APP_* 配置, 缺失即 raise, 避免 secret 落进代码库
 
 env_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env.local")
 
-# ------- 内嵌默认值 (EXP 租户 seed) -------
-_DEFAULTS = {
-    "EXP_NORTH_APP_BASE_URL": "https://dev-open.xiaobei.top/api/v1",
-    "EXP_NORTH_APP_CLIENT_ID": "fpcli_3BhiN9SlmSi09TN7IgIow2dVGQI",
-    "EXP_NORTH_APP_CLIENT_SECRET": "cNyqZsGnMc3RHOGQX~Ym-0eM3k",
-    "EXP_NORTH_APP_WORKSPACE_ID": "1494a256-3b51-4711-ab00-5f9833184db0",
-    "EXP_NORTH_APP_AGENT_USER_ID": "6e11917a-931c-4b41-bb60-3f82a1cbbcf7",
-}
-
 
 def get_env_value(key):
-    """
-    读取指定配置
-    优先级: 系统环境变量 > .env.local 文件 > 本文件 _DEFAULTS
-    """
+    """读取 key: 系统环境变量 > .env.local; 读不到返回空串"""
     if os.getenv(key):
         return os.getenv(key)
 
@@ -37,29 +20,30 @@ def get_env_value(key):
                 line = line.strip()
                 if line == "" or line.startswith("#") or "=" not in line:
                     continue
-
                 env_key, env_value = line.split("=", 1)
                 if env_key.strip() == key:
                     return env_value.strip().strip('"').strip("'")
     except FileNotFoundError:
-        # 没有 .env.local 是正常场景, 走内嵌默认值
-        pass
+        logger.error(f".env.local 不存在: {env_path}")
     except Exception as e:
         logger.error(f"读取.env.local失败: {e}")
 
-    return _DEFAULTS.get(key, "")
+    return ""
 
 
-# 小北原生 open API 配置
-# 当前按 EXP 租户读取；如果要切 dev/chj，在 .env.local 里配置对应 EXP_NORTH_APP_* 覆盖即可
+# 按 EXP 租户读取; 换租户改 .env.local 里的 EXP_NORTH_APP_* 值即可
 north_app_base_url = get_env_value("EXP_NORTH_APP_BASE_URL")
 north_app_client_id = get_env_value("EXP_NORTH_APP_CLIENT_ID")
 north_app_client_secret = get_env_value("EXP_NORTH_APP_CLIENT_SECRET")
 north_app_workspace_id = get_env_value("EXP_NORTH_APP_WORKSPACE_ID")
 north_app_agent_user_id = get_env_value("EXP_NORTH_APP_AGENT_USER_ID")
 
-if north_app_base_url == "" or north_app_client_id == "" or north_app_client_secret == "":
-    raise Exception(
-        "缺少 EXP_NORTH_APP_BASE_URL / EXP_NORTH_APP_CLIENT_ID / EXP_NORTH_APP_CLIENT_SECRET, "
-        "请检查 config/get_xiaobei_api.py 内嵌默认值或 .env.local 配置"
-    )
+_missing = [k for k, v in {
+    "EXP_NORTH_APP_BASE_URL": north_app_base_url,
+    "EXP_NORTH_APP_CLIENT_ID": north_app_client_id,
+    "EXP_NORTH_APP_CLIENT_SECRET": north_app_client_secret,
+    "EXP_NORTH_APP_WORKSPACE_ID": north_app_workspace_id,
+    "EXP_NORTH_APP_AGENT_USER_ID": north_app_agent_user_id,
+}.items() if not v]
+if _missing:
+    raise RuntimeError(f"缺少必填配置 {_missing}, 请在 .env.local 里补齐")

@@ -5,8 +5,8 @@ import traceback
 import urllib3
 
 urllib3.disable_warnings()
-from config.get_visits_item_data import get_csv_visits_item_data
-from config.logger import get_logger
+from utils.get_visits_item_data import get_csv_visits_item_data
+from utils.logger import get_logger
 from config.get_token import token
 from config.api_client import base_url
 

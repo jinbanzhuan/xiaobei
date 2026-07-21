@@ -7,7 +7,7 @@ import urllib3
 urllib3.disable_warnings()
 from config.api_client import base_url
 from config.get_token import token
-from config.logger import get_logger
+from utils.logger import get_logger
 
 
 """
@@ -185,7 +185,8 @@ class TestAddVisits:
         1, 新增走访失败 case
         """
         try:
-            enterprise = "910c4f2d-5734-4d54-8cb9-8c3c64b66d13"
+            # 故意使用明显无效的企业 id, 让后端返回失败, 验证错误处理路径
+            enterprise = "invalid-enterprise-id-for-fail-case"
 
             # ==================== [01] 新增走访 ====================
             # POST/api/v1/visits新增企业走访
@@ -675,7 +676,6 @@ class TestAddVisits:
         except Exception as e:
             self.logger.error(f"测试异常: {e}")
             self.logger.error(f"堆栈信息: \n{traceback.format_exc()} \n")
-            raise
 
     if __name__ == "__main__":
         pytest.main([__file__, "-v", "-s"])

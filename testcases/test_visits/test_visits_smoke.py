@@ -8,7 +8,7 @@ import urllib3
 urllib3.disable_warnings()
 from config.get_token import token
 from config.api_client import base_url
-from config.logger import get_logger
+from utils.logger import get_logger
 
 """
 测试case:
