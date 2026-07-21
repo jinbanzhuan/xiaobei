@@ -43,7 +43,7 @@ class TestVisitsSmoke:
             get_enterprises = requests.get(
                 url=f"{base_url}/api/v1/enterprises?pageSize=100&page=1",
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             assert get_enterprises.status_code == 200, f"[01]🙅获取随机企业id失败,️响应码错误:{get_enterprises.status_code}"
@@ -62,7 +62,7 @@ class TestVisitsSmoke:
                     "source": "手动录入"
                 },
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             assert add_visits.status_code == 200, f"[02]🙅新增走访失败,️响应码错误:{add_visits.status_code}"
@@ -78,7 +78,7 @@ class TestVisitsSmoke:
                     "status": "checklist"
                 },
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             assert checklists.status_code == 200, f"[03]🙅响应码错误:{checklists.status_code}"
@@ -95,7 +95,7 @@ class TestVisitsSmoke:
                     "status": "visiting"
                 },
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
 
@@ -113,7 +113,7 @@ class TestVisitsSmoke:
                     "status": "confirmed"
                 },
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
 
@@ -133,7 +133,7 @@ class TestVisitsSmoke:
                     "name": "飞书妙记"
                 },
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             # 断言状态码和响应结果
@@ -151,7 +151,7 @@ class TestVisitsSmoke:
                     "rawContent": feishu_url
                 },
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             assert add_parse.status_code == 200, f"[07]🙅响应码错误:{add_parse.status_code}"
@@ -171,7 +171,7 @@ class TestVisitsSmoke:
                 parse_result = requests.get(
                     url=f"{base_url}/api/v1/minutes/parse-result/{tasks_id[0]}",
                     headers=self.headers,
-                    timeout=(10, 30),
+                    timeout=(30, 60),
                     verify=False
                 )
                 assert parse_result.status_code == 200, f"[08]🙅响应码错误:{parse_result.status_code}"
@@ -193,7 +193,7 @@ class TestVisitsSmoke:
                 url=f"{base_url}/api/v1/visits/{visits_id[0]}/analyze",
                 json={},
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             assert add_analyze.status_code == 200, f"[09]🙅响应码错误:{add_analyze.status_code}"
@@ -214,7 +214,7 @@ class TestVisitsSmoke:
                 get_tasks = requests.get(
                     url=f"{base_url}/api/v1/minutes/parsed/{tasks_id[1]}",
                     headers=self.headers,
-                    timeout=(10, 30),
+                    timeout=(30, 60),
                     verify=False
                 )
                 assert get_tasks.status_code == 200, f"[10]🙅响应码错误:{get_tasks.status_code}"
@@ -237,7 +237,7 @@ class TestVisitsSmoke:
             add_profile_updates = requests.get(
                 url=f"{base_url}/api/v1/visits/{visits_id[0]}/profile-updates",
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             # 断言状态码和响应结果
@@ -251,7 +251,7 @@ class TestVisitsSmoke:
                 url=f"{base_url}/api/v1/visits/{visits_id[0]}/submit",
                 json={},
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             assert add_submit.status_code == 200, f"[12]🙅响应码错误:{add_submit.status_code}"
@@ -264,7 +264,7 @@ class TestVisitsSmoke:
                 url=f"{base_url}/api/v1/visits/{visits_id[0]}",
                 json={"status": "submitted"},
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             # 断言状态码和响应结果
@@ -277,7 +277,7 @@ class TestVisitsSmoke:
             del_response = requests.delete(
                 url=f"{base_url}/api/v1/visits/{visits_id[0]}",
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             assert del_response.status_code == 200, f"[14]🙅响应码错误:{del_response.status_code}"

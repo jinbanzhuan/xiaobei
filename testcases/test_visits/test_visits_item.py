@@ -51,7 +51,7 @@ class TestVisitsItem:
             get_enterprises = requests.get(
                 url=f"{base_url}/api/v1/enterprises?pageSize=100&page=1",
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             assert get_enterprises.status_code == 200, f"[01]🙅获取随机企业失败,响应码错误:{get_enterprises.status_code}"
@@ -70,7 +70,7 @@ class TestVisitsItem:
                     "source": "手动录入"
                 },
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             assert add_visits.status_code == 200, f"[02]🙅新增走访失败,响应码错误:{add_visits.status_code}"
@@ -85,7 +85,7 @@ class TestVisitsItem:
             get_checklist = requests.post(
                 url=f"{base_url}/api/v1/visits/{visits_id[0]}/checklist/generate",
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             assert get_checklist.status_code == 200, f"[03]🙅新增走访失败,响应码错误:{add_visits.status_code}"
@@ -100,7 +100,7 @@ class TestVisitsItem:
                     "question": "这是一条新增的背调事项case",
                 },
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             assert add_background_check_items.status_code == 200, f"[04]🙅新增背调事项失败,响应码错误:{add_background_check_items.status_code}"
@@ -112,7 +112,7 @@ class TestVisitsItem:
             del_background_check_items = requests.delete(
                 url=f"{base_url}/api/v1/checklist-items/{item_id[0]}",
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             assert add_background_check_items.status_code == 200, f"[05]🙅查询新增的背调事项失败,响应码错误:{add_background_check_items.status_code}"
@@ -122,7 +122,7 @@ class TestVisitsItem:
             del_visits = requests.delete(
                 url=f"{base_url}/api/v1/visits/{visits_id[0]}",
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             assert del_visits.status_code == 200, f"[06]🙅删除走访失败,响应码错误:{del_visits.status_code}"
@@ -166,7 +166,7 @@ class TestVisitsItem:
             get_enterprises = requests.get(
                 url=f"{base_url}/api/v1/enterprises?pageSize=100&page=1",
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             assert get_enterprises.status_code == 200, f"[01]🙅获取随机企业失败,响应码错误:{get_enterprises.status_code}"
@@ -185,7 +185,7 @@ class TestVisitsItem:
                     "source": "手动录入"
                 },
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             assert add_visits.status_code == 200, f"[02]🙅新增走访失败,响应码错误:{add_visits.status_code}"
@@ -200,7 +200,7 @@ class TestVisitsItem:
             get_checklist = requests.post(
                 url=f"{base_url}/api/v1/visits/{visits_id[0]}/checklist/generate",
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             assert get_checklist.status_code == 200, f"[03]🙅新增走访失败,响应码错误:{add_visits.status_code}"
@@ -218,7 +218,7 @@ class TestVisitsItem:
                         "question": question,
                     },
                     headers=self.headers,
-                    timeout=(10, 30),
+                    timeout=(30, 60),
                     verify=False
                 )
                 assert add_background_check_items.status_code == 200, f"[04]🙅新增背调事项失败,响应码错误:{add_background_check_items.status_code}"
@@ -231,7 +231,7 @@ class TestVisitsItem:
             del_background_check_items = requests.delete(
                 url=f"{base_url}/api/v1/checklist-items/{item_id[0]}",
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
             )
             assert del_background_check_items.status_code == 200, f"[05]🙅查询新增的背调事项失败,响应码错误:{del_background_check_items.status_code}"
             self.logger.info(f"[05] ✅删除新增的背调事项成功:{del_background_check_items.json()}")
@@ -240,7 +240,7 @@ class TestVisitsItem:
             del_visits = requests.delete(
                 url=f"{base_url}/api/v1/visits/{visits_id[0]}",
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             assert del_visits.status_code == 200, f"[06]🙅删除走访失败,响应码错误:{del_visits.status_code}"

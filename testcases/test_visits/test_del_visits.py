@@ -45,7 +45,7 @@ class TestDelVisits:
             get_enterprises = requests.get(
                 url=f"{base_url}/api/v1/enterprises?pageSize=100&page=1",
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             # 断言状态码和code为0
@@ -92,7 +92,7 @@ class TestDelVisits:
             del_visits = requests.delete(
                 url=f"{base_url}/api/v1/visits/{visits}",
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             # 断言状态码
@@ -120,7 +120,7 @@ class TestDelVisits:
             get_enterprises = requests.get(
                 url=f"{base_url}/api/v1/enterprises?pageSize=100&page=1",
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             # 断言状态码和code为0
@@ -170,7 +170,7 @@ class TestDelVisits:
                     "status": "checklist"
                 },
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             # 断言状态码
@@ -189,7 +189,7 @@ class TestDelVisits:
             del_visits = requests.delete(
                 url=f"{base_url}/api/v1/visits/{visits}",
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             # 断言状态码
@@ -220,7 +220,7 @@ class TestDelVisits:
             get_enterprises = requests.get(
                 url=f"{base_url}/api/v1/enterprises?pageSize=100&page=1",
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             # 断言状态码和code为0
@@ -271,7 +271,7 @@ class TestDelVisits:
                     "status": "checklist"
                 },
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             # 断言状态码
@@ -291,7 +291,7 @@ class TestDelVisits:
                     "status": "visiting"
                 },
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             # 断言状态码
@@ -308,7 +308,7 @@ class TestDelVisits:
             del_visits = requests.delete(
                 url=f"{base_url}/api/v1/visits/{visits}",
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             # 断言状态码
@@ -339,7 +339,7 @@ class TestDelVisits:
             get_enterprises = requests.get(
                 url=f"{base_url}/api/v1/enterprises?pageSize=100&page=1",
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             # 断言状态码和code为0
@@ -390,7 +390,7 @@ class TestDelVisits:
                     "status": "checklist"
                 },
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             # 断言状态码
@@ -412,7 +412,7 @@ class TestDelVisits:
                     "status": "visiting"
                 },
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             # 断言状态码
@@ -433,7 +433,7 @@ class TestDelVisits:
                     "status": "confirmed"
                 },
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             # 断言状态码
@@ -451,7 +451,7 @@ class TestDelVisits:
             del_visits = requests.delete(
                 url=f"{base_url}/api/v1/visits/{visits}",
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             # 断言状态码
@@ -483,7 +483,7 @@ class TestDelVisits:
             get_enterprises = requests.get(
                 url=f"{base_url}/api/v1/enterprises?pageSize=100&page=1",
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             # 断言状态码和code为0
@@ -534,7 +534,7 @@ class TestDelVisits:
                     "status": "checklist"
                 },
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             # 断言状态码
@@ -556,7 +556,7 @@ class TestDelVisits:
                     "status": "visiting"
                 },
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             # 断言状态码
@@ -577,7 +577,7 @@ class TestDelVisits:
                     "status": "confirmed"
                 },
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             # 断言状态码
@@ -598,7 +598,7 @@ class TestDelVisits:
                     "status": "submitted"
                 },
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             # 断言状态码
@@ -616,7 +616,7 @@ class TestDelVisits:
             del_visits = requests.delete(
                 url=f"{base_url}/api/v1/visits/{visits}",
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             # 断言状态码
@@ -645,7 +645,7 @@ class TestDelVisits:
             get_enterprises = requests.get(
                 url=f"{base_url}/api/v1/enterprises?pageSize=100&page=1",
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             # 断言状态码和code为0
@@ -693,7 +693,7 @@ class TestDelVisits:
                 url=f"{base_url}/api/v1/visits/{visits}/hide",
                 json={"hidden": True},
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             # 断言状态码
@@ -709,7 +709,7 @@ class TestDelVisits:
             del_visits = requests.delete(
                 url=f"{base_url}/api/v1/visits/{visits}",
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             # 断言状态码

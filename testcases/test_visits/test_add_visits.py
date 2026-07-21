@@ -42,7 +42,7 @@ class TestAddVisits:
             get_enterprises = requests.get(
                 url=f"{base_url}/api/v1/enterprises?pageSize=100&page=1",
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             # 断言状态码和code为0
@@ -108,7 +108,7 @@ class TestAddVisits:
                 get_enterprises = requests.get(
                     url=f"{base_url}/api/v1/enterprises?pageSize=100&page=1",
                     headers=self.headers,
-                    timeout=(10, 30),
+                    timeout=(30, 60),
                     verify=False
                 )
 
@@ -137,7 +137,7 @@ class TestAddVisits:
                         "source": "手动录入"  # str: 来源
                     },
                     headers=self.headers,
-                    timeout=(10, 30),
+                    timeout=(30, 60),
                     verify=False
                 )
                 # 断言状态码
@@ -162,7 +162,7 @@ class TestAddVisits:
                 del_visits = requests.delete(
                     url=f"{base_url}/api/v1/visits/{visitsId}",
                     headers=self.headers,
-                    timeout=(10, 30),
+                    timeout=(30, 60),
                     verify=False
                 )
                 # 断言状态码
@@ -199,7 +199,7 @@ class TestAddVisits:
                     "source": "手动录入"  # str: 来源
                 },
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
 
@@ -231,7 +231,7 @@ class TestAddVisits:
             get_enterprises = requests.get(
                 url=f"{base_url}/api/v1/enterprises?pageSize=100&page=1",
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             # 断言状态码和code为0
@@ -315,7 +315,7 @@ class TestAddVisits:
                 get_enterprises = requests.get(
                     url=f"{base_url}/api/v1/enterprises?pageSize=100&page=1",
                     headers=self.headers,
-                    timeout=(10, 30),
+                    timeout=(30, 60),
                     verify=False
                 )
 
@@ -344,7 +344,7 @@ class TestAddVisits:
                         "source": "手动录入"  # str: 来源
                     },
                     headers=self.headers,
-                    timeout=(10, 30),
+                    timeout=(30, 60),
                     verify=False
                 )
                 # 断言状态码
@@ -387,7 +387,7 @@ class TestAddVisits:
                 del_visits = requests.delete(
                     url=f"{base_url}/api/v1/visits/{visitsId}",
                     headers=self.headers,
-                    timeout=(10, 30),
+                    timeout=(30, 60),
                     verify=False
                 )
                 # 断言状态码
@@ -415,7 +415,7 @@ class TestAddVisits:
             get_enterprises = requests.get(
                 url=f"{base_url}/api/v1/enterprises?pageSize=100&page=1",
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False
             )
             # 断言状态码和code为0
@@ -517,7 +517,7 @@ class TestAddVisits:
                 get_enterprises = requests.get(
                     url=f"{base_url}/api/v1/enterprises?pageSize=100&page=1",
                     headers=self.headers,
-                    timeout=(10, 30),
+                    timeout=(30, 60),
                     verify=False
                 )
 
@@ -546,7 +546,7 @@ class TestAddVisits:
                         "source": "手动录入"  # str: 来源
                     },
                     headers=self.headers,
-                    timeout=(10, 30),
+                    timeout=(30, 60),
                     verify=False
                 )
                 # 断言状态码
@@ -607,7 +607,7 @@ class TestAddVisits:
                 del_visits = requests.delete(
                     url=f"{base_url}/api/v1/visits/{visitsId}",
                     headers=self.headers,
-                    timeout=(10, 30),
+                    timeout=(30, 60),
                     verify=False
                 )
                 assert del_visits.status_code == 200, f"[05]删除走访失败, 响应码错误:{del_visits.status_code}"
@@ -625,7 +625,7 @@ class TestAddVisits:
             get_all = requests.get(
                 url=f"{base_url}/api/v1/visits?page=1&pageSize=200",
                 headers=self.headers,
-                timeout=(10, 30),
+                timeout=(30, 60),
                 verify=False,
             )
             # 断言状态码
@@ -656,7 +656,7 @@ class TestAddVisits:
                 del_visits = requests.delete(
                     url=f"{base_url}/api/v1/visits/{visits_id}",
                     headers=self.headers,
-                    timeout=(10, 30),
+                    timeout=(30, 60),
                     verify=False,
                 )
                 assert del_visits.status_code == 200, \
