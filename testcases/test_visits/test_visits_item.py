@@ -2,11 +2,10 @@ import pytest
 import requests
 import random
 import traceback
-import time
 import urllib3
 
 urllib3.disable_warnings()
-from utils.get_visits_item_data import get_csv_visits_item_data
+from config.get_visits_item_data import get_csv_visits_item_data
 from config.logger import get_logger
 from config.get_token import token
 from config.api_client import base_url
@@ -258,6 +257,7 @@ class TestVisitsItem:
             self.logger.error(f"堆栈信息:\n{traceback.format_exc()}\n")
         else:
             self.logger.info(f"[06] ✅新增背调事项成功, 🐮 奶牛牛 点赞  👍\n")
+
 
     if __name__ == "__main__":
         pytest.main([__file__, "-v", "-s"])

@@ -1,3 +1,4 @@
+import base64
 import json
 import os
 import time
@@ -42,8 +43,9 @@ BROWSER_DATA_DIR = os.path.expanduser("~/.xiaobei_playwright_data")
 XIAOBEI_LOGIN_URL = "https://dev.xiaobei.top"
 
 # token 真正落在哪个 origin 的 localStorage
-# 老前端 SPA (dev-bo) 加载后会调 API 拉 token 并写入自己 origin 的 localStorage
-# 所以必须去这个 origin 才能读到 north_nova_bo_auth
+# 用 dev-bo.xiaobei.top(老前端): 加载后只显示一张静态错误页("暂不支持当前组织"),
+#   但页面稳定不跳转, 且 localStorage 里 north_nova_bo_auth 一定会被写入 —— 稳
+# ⚠️ 不要改成 chj.xiaobei.top: 它自己有跳转逻辑, 会被我们的定时 reload 组合成死循环刷屏
 TOKEN_ORIGIN = "https://dev-bo.xiaobei.top"
 
 # Local Storage 里存 token 的 key
@@ -138,6 +140,51 @@ def _is_auth_valid(auth_json):
     return remaining > TOKEN_REFRESH_THRESHOLD
 
 
+def _parse_jwt_payload(jwt_token):
+    """
+    从 JWT 字符串里解出 payload 字典 (base64url 解码中间段)
+    典型字段: exp / iat / tenant_id / user_id
+    解析失败返回空 dict
+    """
+    if not jwt_token or jwt_token.count(".") != 2:
+        return {}
+    payload_b64 = jwt_token.split(".")[1]
+    padding = "=" * (-len(payload_b64) % 4)  # base64url 常常没 padding, 补齐
+    try:
+        return json.loads(base64.urlsafe_b64decode(payload_b64 + padding))
+    except Exception as e:
+        logger.warning(f"⚠️ 解析 JWT payload 失败(不影响): {e}")
+        return {}
+
+
+def _clean_stale_singleton_lock():
+    """
+    清理僵尸 SingletonLock: 如果 lock 指向的 pid 已经不存在, 就删除它
+    典型场景: 上次 Playwright 意外中止, 留下 lock 文件, 导致下次 launch 时
+    Chrome for Testing 认为"已有实例在跑"并拒绝启动, 报 TargetClosedError
+    """
+    lock_path = os.path.join(BROWSER_DATA_DIR, "SingletonLock")
+    if not os.path.islink(lock_path):
+        return
+    try:
+        target = os.readlink(lock_path)  # 例如 "Mac.lan-34914"
+        pid = int(target.rsplit("-", 1)[-1])
+        try:
+            os.kill(pid, 0)  # signal 0: 只探测进程是否存在, 不真的发信号
+            # 进程还活着, 说明确实有实例在跑, 保留 lock, 让 Playwright 自己报错更明确
+        except ProcessLookupError:
+            # 进程已不存在, 是僵尸 lock, 一并清理三个 Singleton 相关文件
+            for name in ("SingletonLock", "SingletonCookie", "SingletonSocket"):
+                try:
+                    os.remove(os.path.join(BROWSER_DATA_DIR, name))
+                except FileNotFoundError:
+                    pass
+            logger.info(f"🧹 已清理僵尸 SingletonLock (pid={pid} 不存在)")
+    except Exception as e:
+        # 解析失败保守起见不动, 让 Playwright 自己处理
+        logger.warning(f"⚠️ 解析 SingletonLock 失败(不影响): {e}")
+
+
 def _fetch_token_via_browser():
     """
     用 Playwright 打开浏览器,等用户扫码登录,从 localStorage 抓 token
@@ -159,6 +206,8 @@ def _fetch_token_via_browser():
         logger.info("🌐 首次登录,即将打开 Chromium 浏览器,请用飞书扫码...")
     else:
         logger.info("🌐 尝试用缓存的浏览器数据登录...")
+        # 清理上次可能残留的僵尸 SingletonLock (Chromium 崩溃/被强杀 时会留)
+        _clean_stale_singleton_lock()
 
     with sync_playwright() as p:
         ctx = p.chromium.launch_persistent_context(
@@ -166,48 +215,97 @@ def _fetch_token_via_browser():
             headless=False,  # 始终显示窗口,以防 cookie 过期需要重新扫码
         )
 
+        # 【第三重兜底】: 监听 xiaobei.top 域名下所有请求, 抓第一个 Authorization Bearer
+        # 有些前端(比如 dev.xiaobei.top 新前端)只把 token 存 cookie/内存, 不落 localStorage
+        # 只要页面发过一次带 token 的 API 请求, 我们就能拦到
+        captured_token = {"value": None}
+
+        def _on_request(request):
+            if captured_token["value"]:
+                return
+            if "xiaobei.top" not in request.url:
+                return
+            # Playwright 里 header key 全部小写
+            auth = request.headers.get("authorization", "")
+            if auth.startswith("Bearer "):
+                token_val = auth[len("Bearer "):].strip()
+                if token_val and token_val.count(".") == 2:  # 简单校验是不是 JWT
+                    captured_token["value"] = token_val
+                    logger.info(f"🔍 从 API 请求头抢到 Bearer token (url={request.url[:80]}...)")
+
+        ctx.on("request", _on_request)
+
         # tab 1: 用户扫码用, 打开友好的登录页
         login_page = ctx.new_page()
         login_page.goto(XIAOBEI_LOGIN_URL)
 
         # tab 2: 只为了能读 TOKEN_ORIGIN 的 localStorage
-        # 老前端 SPA(dev-bo)加载后会自动调 API 拉 token 写进自己 origin 的 localStorage
+        # dev-bo.xiaobei.top(老前端)加载后即使显示错误页, 也会把 token 写进自己 origin 的 localStorage
         token_page = ctx.new_page()
         try:
             token_page.goto(TOKEN_ORIGIN)
         except Exception:
-            pass  # dev-bo 首页可能显示"暂不支持当前组织", 忽略即可, 只要 localStorage 能读就行
+            pass  # 加载失败也没关系, 只要 localStorage 能读就行
 
-        # 轮询 token_page.localStorage
+        # 轮询 token_page.localStorage (+ 同时探测 login_page)
         # 每 1 秒读一次, 每 5 秒 reload 一次 token_page 让 SPA 有机会重新拉 token
         # 用 Python 外层 while 而不是 page.wait_for_function, 因为跨 origin 跳转会
         # destroy execution context, wait_for_function 会挂死
+        # 【双兜底】: 同时从 login_page 和 token_page 读 north_nova_bo_auth,
+        #           任一读到即用, 防止某个 origin 因错误页/组织限制没写 localStorage
+        # 【诊断】: URL 变化时打印当前 origin 下的所有 localStorage key
         deadline = time.time() + LOGIN_TIMEOUT_MS / 1000
         auth_str = None
         last_login_url = ""
         last_reload = time.time()
         RELOAD_INTERVAL = 5
 
+        def _read_auth(page):
+            try:
+                return page.evaluate(
+                    f"() => localStorage.getItem('{AUTH_STORAGE_KEY}')"
+                )
+            except Exception:
+                return None
+
         while time.time() < deadline:
-            # 打印登录 tab 的 URL 变化, 方便用户看扫码进度
+            # 打印登录 tab 的 URL 变化 + 该 origin 下的 localStorage keys
             try:
                 cur_url = login_page.url
                 if cur_url != last_login_url:
                     logger.info(f"🔍 登录页跳转: {cur_url}")
                     last_login_url = cur_url
+                    try:
+                        keys = login_page.evaluate("() => Object.keys(localStorage)")
+                        logger.info(f"   [DEBUG] login_page localStorage keys: {keys}")
+                    except Exception:
+                        pass
             except Exception:
                 pass
 
-            # 从 token_page 读 localStorage
-            try:
-                auth_str = token_page.evaluate(
-                    f"() => localStorage.getItem('{AUTH_STORAGE_KEY}')"
-                )
-                if auth_str:
+            # 双兜底: 从两个 tab 分别读 north_nova_bo_auth
+            auth_str = _read_auth(token_page) or _read_auth(login_page)
+            if auth_str:
+                # 顺便记一下 token 是从哪个 tab 读到的, 方便后续简化
+                src = "token_page" if _read_auth(token_page) else "login_page"
+                logger.info(f"   [DEBUG] 从 {src} 读到 {AUTH_STORAGE_KEY}")
+                break
+
+            # 第三重兜底: 监听器抢到了 Bearer, 用 JWT payload 合成 auth JSON
+            if captured_token["value"]:
+                token_val = captured_token["value"]
+                payload = _parse_jwt_payload(token_val)
+                if payload.get("exp"):
+                    auth_synth = {
+                        "userId": payload.get("user_id", ""),
+                        "tenantId": payload.get("tenant_id", ""),
+                        "accessToken": token_val,
+                        "expiresAt": payload.get("exp", 0),
+                        "username": "",  # JWT payload 里没有, 不影响后端鉴权
+                    }
+                    auth_str = json.dumps(auth_synth, ensure_ascii=False)
+                    logger.info("   [DEBUG] 用 request 监听器抓到的 Bearer 合成 auth JSON")
                     break
-            except Exception:
-                # token_page 可能正在跳转 / execution context 被销毁, 忽略
-                pass
 
             # 每 5 秒 reload 一次 token_page
             # 保证 SSO cookie 建立后, SPA 有机会重新拉 token 写 localStorage
@@ -237,7 +335,7 @@ def _fetch_token_via_browser():
 
 def get_dev_token():
     """
-    获取 dev-bo 页面的 accessToken
+    获取小贝管理后台的 accessToken
 
     优先级:
     1. XIAOBEI_TOKEN 环境变量/配置 → 直接返回(不做过期检查)

@@ -10,7 +10,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from config.api_client import base_url
 from config.get_token import token
 from config.logger import get_logger
-from utils.get_visits_data import get_csv_visits_data
+from config.get_visits_data import get_csv_visits_data
 
 """
 测试case:

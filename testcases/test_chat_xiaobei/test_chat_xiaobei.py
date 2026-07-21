@@ -11,20 +11,9 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import urllib3
 
 urllib3.disable_warnings()
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from threading import Lock
 from config.get_token import token
 from config.api_client import base_url
 from config.logger import get_logger
-from config.get_xiaobei_api import (
-    north_app_base_url,
-    north_app_client_id,
-    north_app_client_secret,
-    north_app_workspace_id,
-    north_app_agent_user_id,
-)
-from utils.get_queries_data import get_csv_queries_data
-
 
 
 class TestChat:
@@ -180,7 +169,7 @@ class TestChat:
             self.logger.info(f"[02]✅新增走访成功:{new_visits_response.json()}")
 
             # ==================== [03]传参msg, 获取taskId ====================
-            msg = "hi"
+            msg = "帮我生成背调报告"
             get_checklist = requests.post(
                 url=f"{base_url}/api/v1/xiaobei/invoke",
                 headers=self.headers,
@@ -578,4 +567,5 @@ if __name__ == "__main__":
     test = TestChat()
     # test.test_chat_xiaobei()  # 原生（批量灌 CSV）
     # test.test_chat_xiaobei_api_smoke()    # 原生（交互式 input）
-    test.test_chat_smoke()                # 走后端封装
+    # test.test_chat_smoke()                # 走后端封装
+    test.test_chat_everyday_smoke()

@@ -27,3 +27,11 @@ htmlcov/
 # ===== 运行时产物 =====
 logs/
 *.log
+
+# ===== Allure 测试报告产物（由 Jenkins 生成并发布到 gh-pages） =====
+allure-results/
+allure-report/
+report/
+
+# ===== 备份文件 =====
+*.bak
